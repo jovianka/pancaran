@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->dateTime('date_submitted')->nullable();
             $table->jsonb('details');
+            $table->timestamps();
         });
     }
 

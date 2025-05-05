@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('role');
             $table->string('event_level');
             $table->integer('skp');
+            $table->timestamps();
         });
     }
 

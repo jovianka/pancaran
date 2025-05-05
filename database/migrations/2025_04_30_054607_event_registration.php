@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('poster');
             $table->enum('type', ['registration', 'recruitment']);
             $table->enum('status', ['open', 'closed']);
+            $table->timestamps();
         });
     }
 
