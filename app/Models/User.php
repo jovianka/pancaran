@@ -4,6 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -21,6 +24,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
+        'type',
     ];
 
     /**
@@ -45,4 +50,33 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function faculty(): BelongsTo
+    {
+        return $this->belongsTo(Faculty::class);
+    }
+
+    public function major(): BelongsTo
+    {
+        return $this->belongsTo(Major::class);
+    }
+
+    public function eventRegistrationResponses(): HasMany
+    {
+        return $this->hasMany(EventRegistrationResponse::class);
+    }
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(Invitation::class, 'recipient_id');
+    }
+    public function events(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, 'event_user')->withPivot('status');
+    }
+
+
 }
