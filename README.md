@@ -10,7 +10,7 @@
 [contributors-shield]: https://img.shields.io/github/contributors/jovianka/pancaran?style=flat-square&color=%23ADD8E6
 [contributors-url]: https://github.com/jovianka/pancaran/graphs/contributors
 
-[forks-shield]: https://img.shields.io/github/forks/pancaran/pancaran?style=flat-square&color=%23ADD8E6
+[forks-shield]: https://img.shields.io/github/forks/jovianka/pancaran?style=flat-square&color=%23ADD8E6
 [forks-url]: https://github.com/jovianka/pancaran/fork
 
 [license-shield]: https://img.shields.io/github/license/jovianka/pancaran?style=flat-square&color=%23ADD8E6
