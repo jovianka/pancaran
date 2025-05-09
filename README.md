@@ -45,7 +45,7 @@
 1. Clone this repo
 
    ```bash
-   git clone https://github.com/wahyu-pranata/rpl-proud.git
+   git clone https://github.com/jovianka/pancaran.git
 
 2. Install dependency
 
