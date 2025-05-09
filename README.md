@@ -1,6 +1,6 @@
 <div align="center">
 
-## PANCARAN: Papan Acar Udayana
+## PANCARAN: Papan Acara Udayana
 
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
@@ -25,7 +25,7 @@
     <img src="https://github.com/dash4k/tugas-akhir-alpro-1/assets/133938416/ff71757a-1b51-44b7-b14e-b53b061d9815" alt="Logo" width="230" height="259">
   </a>
 
-  <h3 align="center">Project Sistem Informasi dan Pemrograman Berbasis Wweb</h3>
+  <h3 align="center">Project Sistem Informasi dan Pemrograman Berbasis Web</h3>
 
   <p align="center">
     Papan Acara Udayana adalah sebuah aplikasi berbasis web yang menjadi wadah untuk penyebaran informasi kegiatan-kegiatan yang diselenggarakan di
@@ -53,9 +53,9 @@
    composer install
    npm install
 
-3. Copy .env.example file to .env (create it first)
+3. Copy .env.example file to .env
 4. Change the `DB_CONNECTION` value in .env to pgsql
-5. Uncomment `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` and change the values to your own database configuration.
+5. Uncomment `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` and change the values to your own database configuration in .env.
 6. Generate application key
 
     ```bash
@@ -66,12 +66,11 @@
     ```bash
    php artisan migrate
 
-8. Seed the database. All users in the database are seeded with a default password of "password".
+8. Seed the database.
 
     ```bash
     php artisan db:seed
     ```
-    > [!Note]  
     > Seeder is not available yet. You can skip this step for now.
 
 9. Run the project
