@@ -24,9 +24,11 @@
         "vue-tsc": "^2.2.4"
     },
     "dependencies": {
+        "5": "^0.0.1",
         "@inertiajs/vue3": "^2.0.0-beta.3",
-        "@tailwindcss/vite": "^4.1.1",
-        "@vitejs/plugin-vue": "^5.2.1",
+        "@tailwindcss/line-clamp": "^0.4.4",
+        "@tailwindcss/vite": "^4.1.4",
+        "@vitejs/plugin-vue": "^5.2.3",
         "@vueuse/core": "^12.8.2",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -36,7 +38,7 @@
         "lucide-vue-next": "^0.468.0",
         "reka-ui": "^2.2.0",
         "tailwind-merge": "^3.2.0",
-        "tailwindcss": "^4.1.1",
+        "tailwindcss": "^4.1.4",
         "tw-animate-css": "^1.2.5",
         "typescript": "^5.2.2",
         "vite": "^6.2.0",
