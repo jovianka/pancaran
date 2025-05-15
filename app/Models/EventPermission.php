@@ -9,6 +9,7 @@ class EventPermission extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'event_permission';
+    public $timestamps = false;
 
     public function roles(): BelongsToMany
     {

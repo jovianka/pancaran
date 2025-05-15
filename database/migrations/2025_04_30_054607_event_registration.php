@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('event_registration', function (Blueprint $table) {
             $table->id();
-            $table->string('poster');
-            $table->enum('type', ['registration', 'recruitment']);
+            $table->enum('type', ['recruitment', 'enrollment']);
             $table->enum('status', ['open', 'closed']);
         });
     }

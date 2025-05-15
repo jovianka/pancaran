@@ -5,14 +5,29 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { ActivitySquareIcon, BookOpen, Compass, Folder, LayoutDashboardIcon, LayoutGrid, Medal, MedalIcon } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
     {
+        title: 'Explore',
+        href: '/explore',
+        icon: Compass,
+    },
+    {
         title: 'Dashboard',
         href: '/dashboard',
-        icon: LayoutGrid,
+        icon: LayoutDashboardIcon,
+    },
+    {
+        title: 'Activity',
+        href: '/activity',
+        icon: ActivitySquareIcon,
+    },
+    {
+        title: 'Certificate',
+        href: '/certificate',
+        icon: MedalIcon,
     },
 ];
 

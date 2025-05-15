@@ -11,6 +11,7 @@ class EventRegistration extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'event_registration';
+    public $timestamps = false;
 
     public function questions(): HasMany
     {

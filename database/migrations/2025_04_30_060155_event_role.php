@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('event_role', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('quota');
+            $table->integer('quota')->default(0);
         });
     }
 

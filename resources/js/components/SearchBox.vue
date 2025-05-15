@@ -1,7 +1,3 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
     <div class="py-4 px-4 w-full max-w-2xl lg:px-6">
       <div class="max-w-screen-md sm:text-center">

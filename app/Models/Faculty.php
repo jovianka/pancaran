@@ -9,6 +9,7 @@ class Faculty extends Model
 {
     protected $table = 'faculty';
     protected $guarded = ['id'];
+    public $timestamps = false;
 
     public function users(): HasMany
     {

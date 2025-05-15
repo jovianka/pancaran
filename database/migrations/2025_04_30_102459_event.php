@@ -14,11 +14,14 @@ return new class extends Migration
         Schema::create('event', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
+            $table->text('description');
+            $table->string('poster');
             $table->string('event_level');
+            $table->text('requirements');
             $table->date('start_date');
             $table->date('end_date');
             $table->string('job_description'); // file
+            $table->foreignId('parent_id')->nullable()->constrained('event')->nullOnDelete();//parent event
         });
     }
 

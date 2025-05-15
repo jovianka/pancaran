@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('certificate', function (Blueprint $table) {
+        Schema::create('contact_person', function (Blueprint $table) {
             $table->id();
-            $table->string('nomor_surat');
-            $table->string('file');
+            $table->string('name');
+            $table->string('phone_num');
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('certificate');
+        Schema::dropIfExists('contact_person');
     }
 };

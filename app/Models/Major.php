@@ -10,6 +10,7 @@ class Major extends Model
 {
     protected $table = 'major';
     protected $guarded = ['id'];
+    public $timestamps = false;
 
     public function users(): HasMany
     {

@@ -11,6 +11,7 @@ class EventRole extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'event_role';
+    public $timestamps = false;
 
     public function event(): BelongsTo
     {
