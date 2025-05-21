@@ -52,4 +52,24 @@ class Event extends Model
     {
         return $this->hasOne(SuratTugas::class);
     }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'event_tag');
+    }
+
+    public function parentEvent(): BelongsTo
+    {
+        return $this->belongsTo(Event::class, 'parent_id');
+    }
+
+    public function childEvents(): HasMany
+    {
+        return $this->hasMany(Event::class, 'parent_id');
+    }
+
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(ContactPerson::class);
+    }
 }

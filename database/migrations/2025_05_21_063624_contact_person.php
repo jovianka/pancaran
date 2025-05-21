@@ -11,16 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('event', function (Blueprint $table) {
+        Schema::create('contact_person', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
-            $table->string('event_level');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->string('job_description'); // file
-            $table->jsonb('requirements');
-            $table->enum('status', ['ongoing', 'finished']);
+            $table->string('phone');
             $table->timestamps();
         });
     }
@@ -30,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('event');
+        Schema::dropIfExists('contact_person');
     }
 };
