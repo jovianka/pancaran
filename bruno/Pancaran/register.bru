@@ -1,0 +1,37 @@
+meta {
+  name: /register
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/register
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  nim: 54321
+  name: test bruno
+  email: test@student.unud.ac.id
+  password: 1234qwer
+  password_confirmation: 1234qwer
+  faculty_id: 2
+  major_id: 2
+}
+
+script:pre-request {
+  const cookie = bru.getVar("cookie");
+  
+  if(cookie) {
+    req.setHeader("Cookie", cookie)
+  }
+}
+
+script:post-response {
+  const cookies = res.getHeader('set-cookie');
+  
+  if(cookies) {
+    bru.setVar("cookie", cookies.join('; '));
+  }
+}

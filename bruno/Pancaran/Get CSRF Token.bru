@@ -1,0 +1,27 @@
+meta {
+  name: Get CSRF Token
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8000/register
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const setCookieHeader = res.headers.get('set-cookie');
+  
+  let xsrfTokenMatch  = setCookieHeader[0].match(/XSRF-TOKEN=([^;]+)/);
+  
+  let xsrfToken = decodeURIComponent(xsrfTokenMatch[1]);
+  
+  bru.setEnvVar('X-XSRF-TOKEN',xsrfToken);
+  
+  // let sessionMatch = setCookieHeader[1].match(/laravel_session=([^;]+)/);
+  
+  // let laravelSession = decodeURIComponent(sessionMatch[1]);
+  
+  // bru.setEnvVar('laravel_session',laravelSession);
+}
