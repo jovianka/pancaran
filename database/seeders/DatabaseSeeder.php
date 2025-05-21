@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         $facultyMajorSeeder = new FacultyMajorSeeder();
         $facultyMajorSeeder->run();
 
-        // $userSeeder = new UserSeeder();
-        // $userSeeder->run();
+        $userSeeder = new UserSeeder();
+        $userSeeder->run();
     }
 }
