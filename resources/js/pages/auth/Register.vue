@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area/';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
+import { ChevronsUpDown, LoaderCircle } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps(['faculties', 'majors']);
@@ -75,33 +75,25 @@ const submit = () => {
             <div class="grid gap-6">
                 <div class="grid gap-2">
                     <Label for="name">NIM</Label>
-                    <Input id="name" type="text" required autofocus :tabindex="0" v-model="form.nim" placeholder="Nomor Induk Mahasiswa" />
+                    <Input id="name" type="text" required autofocus v-model="form.nim" placeholder="Nomor Induk Mahasiswa" />
                     <InputError :message="form.errors.nim" />
                 </div>
 
                 <div class="grid gap-2">
                     <Label for="name">Name</Label>
-                    <Input id="name" type="text" required autofocus :tabindex="1" autocomplete="name" v-model="form.name" placeholder="Full name" />
+                    <Input id="name" type="text" required autofocus autocomplete="name" v-model="form.name" placeholder="Full name" />
                     <InputError :message="form.errors.name" />
                 </div>
 
                 <div class="grid gap-2">
                     <Label for="email">Email address</Label>
-                    <Input id="email" type="email" required :tabindex="2" autocomplete="email" v-model="form.email" placeholder="email@example.com" />
+                    <Input id="email" type="email" required autocomplete="email" v-model="form.email" placeholder="email@example.com" />
                     <InputError :message="form.errors.email" />
                 </div>
 
                 <div class="grid gap-2">
                     <Label for="password">Password</Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        required
-                        :tabindex="3"
-                        autocomplete="new-password"
-                        v-model="form.password"
-                        placeholder="Password"
-                    />
+                    <Input id="password" type="password" required autocomplete="new-password" v-model="form.password" placeholder="Password" />
                     <InputError :message="form.errors.password" />
                 </div>
 
@@ -111,7 +103,6 @@ const submit = () => {
                         id="password_confirmation"
                         type="password"
                         required
-                        :tabindex="4"
                         autocomplete="new-password"
                         v-model="form.password_confirmation"
                         placeholder="Confirm password"
@@ -123,9 +114,9 @@ const submit = () => {
                     <Label for="faculty">Faculty</Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
-                            <Button variant="outline" class="w-fit" id="faculty">
+                            <Button variant="outline" class="w-fit text-center" id="faculty">
                                 {{ selectedFacultyName == '' ? 'Choose Faculty' : selectedFacultyName }}
-                                <ChevronDown />
+                                <ChevronsUpDown />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent class="w-56">
@@ -145,9 +136,9 @@ const submit = () => {
                     <Label for="major">Major</Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child :disabled="selectedFacultyName == '' ? true : false">
-                            <Button variant="outline" class="w-fit" id="major">
+                            <Button variant="outline" class="w-fit text-center" id="major">
                                 {{ selectedMajorName == '' ? 'Choose Major' : selectedMajorName }}
-                                <ChevronDown />
+                                <ChevronsUpDown />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent class="w-56">
@@ -162,7 +153,8 @@ const submit = () => {
                     </DropdownMenu>
                     <InputError v-if="form.errors.major_id" message="Please choose your major" />
                 </div>
-                <Button type="submit" class="mt-2 w-full hover:cursor-pointer" tabindex="5" :disabled="form.processing">
+
+                <Button type="submit" class="mt-2 w-full hover:cursor-pointer" :disabled="form.processing">
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                     Create account
                 </Button>
@@ -170,7 +162,7 @@ const submit = () => {
 
             <div class="text-muted-foreground text-center text-sm">
                 Already have an account?
-                <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
+                <TextLink :href="route('login')" class="underline underline-offset-4">Log in</TextLink>
             </div>
         </form>
     </AuthBase>
