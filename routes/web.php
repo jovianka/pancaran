@@ -14,12 +14,7 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('explore', function () {
-    //     with(['userEvents' => function ($q) {
-    //     $q->whereHas('eventRole', function ($q2) {
-    //         $q2->where('name', 'Admin');
-    //     })->with('user');
-    // }])
-    return Inertia::render('Explore');
+    return Inertia::render('Explore', ['events'=> Event::with(['eventUsers.user', 'eventUsers.role', 'tag'])->visibleToUser(auth()->user(), request(['search']))->latest()->get() ]);
 })->middleware(['auth', 'verified'])->name('explore');
 
 require __DIR__.'/settings.php';
