@@ -14,6 +14,47 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+interface EventUser{
+    id: number;
+    status: string;
+    user: {
+        id: number;
+        name: string;
+    }
+    event_id: number;
+    role:{
+        id: number;
+        name: string;
+        quota: number;
+        event_id: number;
+        skp_detail_id: number;
+    }
+}
+
+interface eventData {
+    id: number;
+    name: string;
+    description: string;
+    poster: string;
+    event_level: string;
+    requirements: string;
+    start_date: Date;
+    end_date: Date;
+    job_description: string;
+    created_at: Date;
+    updated_at: Date;
+    parent_id: number | null;
+    event_users : EventUser[];
+    tag: {
+        id: number;
+        name: string;
+    }
+}
+
+defineProps<{
+  events: eventData[]
+}>();
+
 const showNav= ref(true)
 let lastScrollTop = 0
 
@@ -62,21 +103,13 @@ onBeforeUnmount(() => {
                     <input type="radio" id="volunteer" name="tag" value="volunteer">
                     <label for="volunteer">Volunteer</label>
                 </div>
-                <!-- <Link href="#">Committee</Link>
-                <Link href="#">Seminar</Link>
-                <Link href="#">Competition</Link>
-                <Link href="#">Volunteer</Link> -->
             </div>
         </nav>
         <div class="flex h-full flex-1 flex-col gap-4 bg rounded-xl p-4">
             <div class="grid auto-rows-min gap-10 px-0 lg:px-10 md:grid-cols-3">
-                <CardBox />
-                <CardBox />
-                <CardBox />
-                <CardBox />
-                <CardBox />
-                <CardBox />
+                <CardBox v-for="event in events" :key="event.id" :event="event"/>
             </div>
         </div>
+
     </AppLayout>
 </template>
