@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Builder;
 
 class Event extends Model
 {
@@ -15,7 +16,36 @@ class Event extends Model
     protected $guarded = ['id'];
     protected $table = 'event';
 
-    public $timestamps = false;
+    // public $timestamps = false;
+
+    public function scopeVisibleToUser(Builder $query, $user, array $filters)
+    {
+        $query->where(function ($query) use ($user) {
+            $query->whereIn('event_level', ['university', 'international', 'regional', 'national'])
+                ->orWhere(fn ($query) =>
+                    $query->where('event_level', 'faculty')//Cek apabila event levelnya faculty/facultas
+                        ->whereHas('eventUsers', fn ($query) =>
+                            $query->whereHas('role', fn($query) => $query->where('name', 'admin'))//Cari admin dari eventnya
+                            ->whereHas('user', fn($query) => $query->where('faculty_id', $user->faculty_id)) //Bandingkan apakah major admin dan user sama
+                        )
+                )
+                ->orWhere(function ($query) use ($user) {
+                    $query->where('event_level', 'major') //Cek apabila event levelnya major/prodi
+                        ->whereHas('eventUsers', fn ($query) =>
+                            $query->whereHas('role', fn($query) => $query->where('name', 'admin')) //Cari admin dari eventnya
+                            ->whereHas('user', fn($query) => $query->where('major_id', $user->major_id)) //Bandingkan apakah major admin dan user sama
+                        );
+                });
+        });
+
+        $query->when($filters['search']??false, fn ($query, $filters) => $query->where('name', 'like', '%'. request('search').'%'));
+
+
+        return $query;
+
+
+    }
+
 
     public function users(): BelongsToMany
     {
