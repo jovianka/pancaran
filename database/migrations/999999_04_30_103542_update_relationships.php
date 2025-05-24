@@ -82,6 +82,8 @@ return new class extends Migration
 
         Schema::table('event', function (Blueprint $table) {
             $table->foreignId('parent_id')->nullable()->references('id')->on('event');
+            $table->foreignId('major_id')->references('id')->on('major');
+            $table->foreignId('faculty_id')->references('id')->on('faculty');
         });
 
         Schema::table('contact_person', function (Blueprint $table) {
