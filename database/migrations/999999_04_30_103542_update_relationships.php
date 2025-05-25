@@ -45,7 +45,7 @@ return new class extends Migration
 
         Schema::table('event_role', function (Blueprint $table) {
             $table->foreignId('event_id')->references('id')->on('event');
-            $table->foreignId('detail_skp_id')->references('id')->on('detail_skp');
+            $table->foreignId('detail_skp_id')->nullable()->references('id')->on('detail_skp');
         });
 
         Schema::table('certificate', function (Blueprint $table) {
