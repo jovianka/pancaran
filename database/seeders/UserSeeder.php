@@ -1,10 +1,7 @@
 <?php
 
 namespace Database\Seeders;
-
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Faculty;
 use App\Models\Major;
@@ -19,7 +16,6 @@ class UserSeeder extends Seeder
         $this->call(
             FacultySeeder::class,  // Seeding untuk tabel faculty dan major
         );
-
 
 
         User::factory()->count(30)->create([

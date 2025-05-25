@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('surat_tugas', function (Blueprint $table) {
             $table->id();
             $table->string('nomor');
+            $table->timestamps();
         });
     }
 

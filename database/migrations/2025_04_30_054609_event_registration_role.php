@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('event_registration_role', function (Blueprint $table) {
             $table->id();
+            $table->timestamps();
         });
 
     }

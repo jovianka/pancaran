@@ -87,12 +87,12 @@ class Event extends Model
         return $this->hasOne(SuratTugas::class);
     }
 
-    public function tag(): BelongsTo
+    public function tags(): BelongsTo
     {
         return $this->belongsTo(Tag::class);
     }
 
-    public function contact(): HasMany
+    public function contacts(): HasMany
     {
         return $this->hasMany(ContactPerson::class);
     }

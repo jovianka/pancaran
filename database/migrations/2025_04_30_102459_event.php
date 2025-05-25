@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('job_description'); // file
             $table->timestamps();
             $table->foreignId('parent_id')->nullable()->constrained('event')->nullOnDelete();//parent event
+            $table->jsonb('requirements');
+            $table->enum('status', ['ongoing', 'finished']);
         });
     }
 

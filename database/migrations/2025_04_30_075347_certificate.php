@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nomor_surat');
             $table->string('file');
+            $table->timestamps();
         });
     }
 

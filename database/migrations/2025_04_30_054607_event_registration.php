@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->enum('type', ['recruitment', 'enrollment']);
             $table->enum('status', ['open', 'closed']);
+            $table->timestamps();
         });
     }
 

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('event_permission', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->timestamps();
         });
     }
 

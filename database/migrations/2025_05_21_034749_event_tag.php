@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('detail_skp', function (Blueprint $table) {
+        Schema::create('event_tag', function (Blueprint $table) {
             $table->id();
-            $table->string('category');
-            $table->string('description');
-            $table->string('role');
-            $table->string('event_level');
-            $table->integer('skp');
             $table->timestamps();
         });
     }
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('detail_skp');
+        Schema::dropIfExists('event_tag');
     }
 };

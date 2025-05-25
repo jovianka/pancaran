@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema ;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -77,6 +77,21 @@ return new class extends Migration
         Schema::table('event_user', function (Blueprint $table) {
             $table->foreignId('major_id')->references('id')->on('major');
             $table->foreignId('faculty_id')->references('id')->on('faculty');
+        });
+
+        Schema::table('event_tag', function (Blueprint $table) {
+            $table->foreignId('tag_id')->references('id')->on('tag');
+            $table->foreignId('event_id')->references('id')->on('event');
+        });
+
+        Schema::table('event', function (Blueprint $table) {
+            $table->foreignId('parent_id')->nullable()->references('id')->on('event');
+            $table->foreignId('major_id')->references('id')->on('major');
+            $table->foreignId('faculty_id')->references('id')->on('faculty');
+        });
+
+        Schema::table('contact_person', function (Blueprint $table) {
+            $table->foreignId('event_id')->references('id')->on('event');
         });
 
     }
