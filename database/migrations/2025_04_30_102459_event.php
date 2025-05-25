@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('event', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
+            $table->text('description');
             $table->string('event_level');
             $table->date('start_date');
             $table->date('end_date');
             $table->string('job_description'); // file
-            $table->jsonb('requirements');
+            $table->jsonb('requirements')->nullable();
             $table->enum('status', ['ongoing', 'finished']);
             $table->timestamps();
         });
