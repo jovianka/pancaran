@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,6 +13,8 @@ class Event extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'event';
+
+    use HasFactory;
 
     public function users(): BelongsToMany
     {
