@@ -2,16 +2,11 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
+use App\Models\User;
 use App\Models\Event;
-use App\Models\EventDivision;
-use App\Models\EventDivisionUser;
-use App\Models\EventTimeline;
+use App\Models\EventRole;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Database\Seeders\FacultyMajorSeeder;
-use Database\Seeders\UserSeeder;
+use App\Models\Tag;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,10 +15,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $facultyMajorSeeder = new FacultyMajorSeeder();
-        $facultyMajorSeeder->run();
+        $this->call([
+            RoleSeeder::class, //Seeding untuk tabel event_role
+        ]);
 
-        $userSeeder = new UserSeeder();
-        $userSeeder->run();
+        $events = Event::all();
+        $tagcollection = Tag::all();
+        $users = User::all();
+
+        foreach ($events as $event){
+            $tagnumber = rand(2, 5);
+            $tags = $tagcollection->random($tagnumber);
+            $user = $users->where('type', 'organization')->random();
+            $role = EventRole::where('name', 'admin')->first();
+
+
+            $user->events()->attach($event->id, [
+                'event_role_id' => $role->id,
+                'faculty_id' => $user->faculty_id,
+                'major_id' => $user->major_id,
+                'status' => 'active',
+            ]);
+
+            $tagIds = $tags->pluck('id');
+            $event->tags()->attach($tagIds);
+
+        };
     }
 }
+
+
+
