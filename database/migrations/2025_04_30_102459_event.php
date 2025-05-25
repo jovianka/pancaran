@@ -17,13 +17,11 @@ return new class extends Migration
             $table->text('description');
             $table->string('poster');
             $table->string('event_level');
-            $table->text('requirements');
+            $table->jsonb('requirements')->nullable();
             $table->date('start_date');
             $table->date('end_date');
             $table->string('job_description'); // file
             $table->timestamps();
-            $table->foreignId('parent_id')->nullable()->constrained('event')->nullOnDelete();//parent event
-            $table->jsonb('requirements');
             $table->enum('status', ['ongoing', 'finished']);
         });
     }

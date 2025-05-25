@@ -13,7 +13,7 @@ class TagSeeder extends Seeder
      */
     public function run(): void
     {
-        $tags = ['Seminar', 'Committee', 'Competition', 'Volunteer'];
+        $tags = ['Seminar', 'Committee', 'Competition', 'Volunteer', 'Workshop', 'Webinar', 'Teknologi', 'Pendidikan', 'Musik', 'Olahraga','Video Game'];
         foreach ($tags as $tagName) {
             Tag::Create(['name' => $tagName]);
         }

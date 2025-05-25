@@ -20,23 +20,19 @@ class Event extends Model
 
     public function scopeVisibleToUser(Builder $query, $user, array $filters)
     {
-        $query->where(function ($query) use ($user) {
+        $query->where(fn ($query) =>
             $query->whereIn('event_level', ['university', 'international', 'regional', 'national'])
+
                 ->orWhere(fn ($query) =>
                     $query->where('event_level', 'faculty')//Cek apabila event levelnya faculty/facultas
-                        ->whereHas('eventUsers', fn ($query) =>
-                            $query->whereHas('role', fn($query) => $query->where('name', 'admin'))//Cari admin dari eventnya
-                            ->whereHas('user', fn($query) => $query->where('faculty_id', $user->faculty_id)) //Bandingkan apakah major admin dan user sama
-                        )
+                        ->where('faculty_id', $user->faculty_id)
                 )
-                ->orWhere(function ($query) use ($user) {
+
+                ->orWhere(fn ($query) =>
                     $query->where('event_level', 'major') //Cek apabila event levelnya major/prodi
-                        ->whereHas('eventUsers', fn ($query) =>
-                            $query->whereHas('role', fn($query) => $query->where('name', 'admin')) //Cari admin dari eventnya
-                            ->whereHas('user', fn($query) => $query->where('major_id', $user->major_id)) //Bandingkan apakah major admin dan user sama
-                        );
-                });
-        });
+                        ->where('major_id', $user->major_id)
+                )
+        );
 
         $query->when($filters['search']??false, fn ($query, $filters) => $query->where('name', 'like', '%'. request('search').'%'));
 
@@ -49,7 +45,7 @@ class Event extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'event_user')->withPivot('status');
+        return $this->belongsToMany(User::class, 'event_user')->withPivot('status')->withTimestamps();
     }
 
     public function eventUsers(): HasMany
@@ -87,9 +83,9 @@ class Event extends Model
         return $this->hasOne(SuratTugas::class);
     }
 
-    public function tags(): BelongsTo
+    public function tags(): BelongsToMany
     {
-        return $this->belongsTo(Tag::class);
+        return $this->belongsToMany(Tag::class)->withTimestamps();
     }
 
     public function contacts(): HasMany

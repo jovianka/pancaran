@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\Event;
 use App\Models\EventRole;
 use Illuminate\Database\Seeder;
-use Database\Seeders\UserSeeder;
+use App\Models\Tag;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,14 +16,16 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserSeeder::class, // Seeding untuk tabel user
             RoleSeeder::class, //Seeding untuk tabel event_role
         ]);
 
         $events = Event::all();
+        $tagcollection = Tag::all();
         $users = User::all();
 
         foreach ($events as $event){
+            $tagnumber = rand(2, 5);
+            $tags = $tagcollection->random($tagnumber);
             $user = $users->where('type', 'organization')->random();
             $role = EventRole::where('name', 'admin')->first();
 
@@ -34,6 +36,9 @@ class DatabaseSeeder extends Seeder
                 'major_id' => $user->major_id,
                 'status' => 'active',
             ]);
+
+            $tagIds = $tags->pluck('id');
+            $event->tags()->attach($tagIds);
 
         };
     }

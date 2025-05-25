@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('major_id')->references('id')->on('major');
         });
 
-        Schema::table('event', function (Illuminate\Database\Schema\Blueprint $table) {
-            $table->foreignId('tag_id')->nullable()->references('id')->on('tag')->onDelete('set null');
-        });
+        // Schema::table('event', function (Illuminate\Database\Schema\Blueprint $table) {
+        //     $table->foreignId('tag_id')->nullable()->references('id')->on('tag')->onDelete('set null');
+        // });
 
         Schema::table('major', function (Blueprint $table) {
             $table->foreignId('faculty_id')->references('id')->on('faculty');
@@ -85,7 +85,7 @@ return new class extends Migration
         });
 
         Schema::table('event', function (Blueprint $table) {
-            $table->foreignId('parent_id')->nullable()->references('id')->on('event');
+            $table->foreignId('parent_id')->nullable()->constrained('event')->nullOnDelete();
             $table->foreignId('major_id')->references('id')->on('major');
             $table->foreignId('faculty_id')->references('id')->on('faculty');
         });

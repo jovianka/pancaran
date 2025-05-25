@@ -14,11 +14,10 @@ class Tag extends Model
     protected $guarded = ['id'];
     protected $table = 'tag';
 
-    public $timestamps = false;
 
     public function events(): BelongsToMany
     {
-        return $this->belongsToMany(Event::class);
+        return $this->belongsToMany(Event::class)->withTimestamps();
     }
 
 }

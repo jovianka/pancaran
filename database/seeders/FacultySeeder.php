@@ -87,5 +87,12 @@ class FacultySeeder extends Seeder
                 ]);
             }
         }
+
+        $faculty = Faculty::create(['name' => 'Any']);
+        Major::create([
+                    'faculty_id' => $faculty->id,
+                    'name' => 'Any',
+                ]);
+
     }
 }

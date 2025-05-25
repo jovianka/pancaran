@@ -36,7 +36,7 @@ class EventRegistrationSeeder extends Seeder
             else{
                 EventRegistration::create([
                     'event_id' => $event->id,
-                    'type' => 'enrollment',
+                    'type' => 'registration',
                     'status' => Arr::random($status),
                 ]);
             }
