@@ -21,7 +21,6 @@ class EventFactory extends Factory
         return [
             'name'=>fake()->sentence(2),
             'description'=>fake()->paragraph(4),
-            'poster'=>'https://images.unsplash.com/photo-1584448141569-69f342da535c',
             // 'requirements'=>fake()->paragraph(2),
             'start_date'=>fake()->dateTimeBetween('-1 month', 'now'),
             'end_date'=>fake()->dateTimeBetween('now', '+1 month' ),
