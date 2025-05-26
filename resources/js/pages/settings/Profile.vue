@@ -267,6 +267,9 @@ const removeAvatar = () => {
                             <DropdownMenuContent class="w-56">
                                 <ScrollArea class="max-h-80">
                                     <DropdownMenuRadioGroup v-model="selectedMajorName">
+                                        <DropdownMenuRadioItem v-if="selectedFacultyName != 'Any' && user.type == 'organization'" value="Any">
+                                            Any
+                                        </DropdownMenuRadioItem>
                                         <DropdownMenuRadioItem v-for="major in facultyMajors" :key="major.id" :value="major.name">
                                             {{ major.name }}
                                         </DropdownMenuRadioItem>
