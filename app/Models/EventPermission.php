@@ -12,7 +12,7 @@ class EventPermission extends Model
 
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(EventRole::class, 'event_role_permission');
+        return $this->belongsToMany(EventRole::class, 'event_role_permission')->withTimestamps();
     }
 }
 

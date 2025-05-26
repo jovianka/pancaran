@@ -12,6 +12,6 @@ class Tag extends Model
 
     public function events(): BelongsToMany
     {
-        return $this->belongsToMany(Event::class, 'event_tag');
+        return $this->belongsToMany(Event::class, 'event_tag')->withTimestamps();
     }
 }
