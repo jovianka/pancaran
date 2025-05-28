@@ -86,6 +86,51 @@ const submit = () => {
                             A new verification link has been sent to your email address.
                         </div>
                     </div>
+                    <div class="grid gap-2">
+                        <Label for="faculty">Faculty</Label>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                                <Button variant="outline" class="w-fit text-center" id="faculty">
+                                    {{ selectedFacultyName == '' ? 'Choose Faculty' : selectedFacultyName }}
+                                    <ChevronsUpDown />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent class="w-56">
+                                <ScrollArea class="max-h-80">
+                                    <DropdownMenuRadioGroup v-model="selectedFacultyName">
+                                        <DropdownMenuRadioItem v-for="faculty in props.faculties" :key="faculty.id" :value="faculty.name">
+                                            {{ faculty.name }}
+                                        </DropdownMenuRadioItem>
+                                    </DropdownMenuRadioGroup>
+                                </ScrollArea>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <InputError v-if="form.errors.faculty_id" message="Please choose your faculty" />
+                    </div>
+                    <div class="grid gap-2">
+                        <Label for="major">Major</Label>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child :disabled="selectedFacultyName == '' ? true : false">
+                                <Button variant="outline" class="w-fit text-center" id="major">
+                                    {{ selectedMajorName == '' ? 'Choose Major' : selectedMajorName }}
+                                    <ChevronsUpDown />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent class="w-56">
+                                <ScrollArea class="max-h-80">
+                                    <DropdownMenuRadioGroup v-model="selectedMajorName">
+                                        <DropdownMenuRadioItem v-if="selectedFacultyName != 'Any' && user.type == 'organization'" value="Any">
+                                            Any
+                                        </DropdownMenuRadioItem>
+                                        <DropdownMenuRadioItem v-for="major in facultyMajors" :key="major.id" :value="major.name">
+                                            {{ major.name }}
+                                        </DropdownMenuRadioItem>
+                                    </DropdownMenuRadioGroup>
+                                </ScrollArea>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <InputError v-if="form.errors.major_id" message="Please choose your major" />
+                    </div>
 
                     <div class="flex items-center gap-4">
                         <Button :disabled="form.processing">Save</Button>

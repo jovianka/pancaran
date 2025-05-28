@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { ActivitySquareIcon, BookOpen, Compass, Folder, LayoutDashboardIcon, LayoutGrid, Medal, MedalIcon } from 'lucide-vue-next';
+import { BookOpen, CalendarClock, Folder, User as UserIcon } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -17,17 +17,12 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
-        icon: LayoutDashboardIcon,
+        icon: UserIcon,
     },
     {
         title: 'Activity',
         href: '/activity',
-        icon: ActivitySquareIcon,
-    },
-    {
-        title: 'Certificate',
-        href: '/certificate',
-        icon: MedalIcon,
+        icon: CalendarClock
     },
 ];
 

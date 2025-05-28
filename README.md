@@ -71,7 +71,6 @@
     ```bash
     php artisan db:seed
     ```
-    > Seeder is not available yet. You can skip this step for now.
 
 9. Run the project
     

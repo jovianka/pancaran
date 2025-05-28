@@ -28,6 +28,7 @@ class EventRegistrationSeeder extends Seeder
             if ($tagName == 'Committee'){
                 EventRegistration::create([
                     'event_id' => $event->id,
+                    'poster'=>'https://images.unsplash.com/photo-1584448141569-69f342da535c',
                     'type' => 'recruitment',
                     'status' => Arr::random($status),
                 ]);
@@ -36,6 +37,7 @@ class EventRegistrationSeeder extends Seeder
             else{
                 EventRegistration::create([
                     'event_id' => $event->id,
+                    'poster'=>'https://images.unsplash.com/photo-1584448141569-69f342da535c',
                     'type' => 'registration',
                     'status' => Arr::random($status),
                 ]);

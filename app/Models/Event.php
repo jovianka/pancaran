@@ -85,22 +85,21 @@ class Event extends Model
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class)->withTimestamps();
+        return $this->belongsToMany(Tag::class, 'event_tag')->withTimestamps();
+    }
+
+    public function parentEvent(): BelongsTo
+    {
+        return $this->belongsTo(Event::class, 'parent_id');
+    }
+
+    public function childEvents(): HasMany
+    {
+        return $this->hasMany(Event::class, 'parent_id');
     }
 
     public function contacts(): HasMany
     {
         return $this->hasMany(ContactPerson::class);
-    }
-
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(Event::class, 'parent_id');
-    }
-
-    // Relasi ke semua anak (subkategori)
-    public function children(): HasMany
-    {
-        return $this->hasMany(Event::class, 'parent_id');
     }
 }
