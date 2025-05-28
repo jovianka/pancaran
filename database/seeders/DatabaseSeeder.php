@@ -32,8 +32,6 @@ class DatabaseSeeder extends Seeder
 
             $user->events()->attach($event->id, [
                 'event_role_id' => $role->id,
-                'faculty_id' => $user->faculty_id,
-                'major_id' => $user->major_id,
                 'status' => 'active',
             ]);
 

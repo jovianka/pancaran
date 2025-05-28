@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->string('event_level');
+            $table->string('poster')->nullable(); // image file
             $table->date('start_date');
             $table->date('end_date');
             $table->string('job_description'); // file
