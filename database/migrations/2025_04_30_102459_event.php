@@ -23,7 +23,6 @@ return new class extends Migration
             $table->jsonb('requirements')->nullable();
             $table->enum('status', ['ongoing', 'finished']);
             $table->timestamps();
-            $table->enum('status', ['ongoing', 'finished']);
         });
     }
 
