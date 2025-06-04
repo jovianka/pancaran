@@ -15,38 +15,26 @@ class EventRegistration extends Model
 
     public function scopeVisibleToUser(Builder $query, $user, $by, $tags, $scopes, $title)
     {
-        $query->where('status', 'open')->whereHas( 'event',fn ($query) =>
-            $query->whereIn('event_level', ['university', 'international', 'regional', 'national'])
+        if ($user->type === 'student'){
+            $query->where('status', 'open')->whereHas( 'event',fn ($query) =>
+                $query->whereIn('event_level', ['university', 'international', 'regional', 'national'])
 
-                ->orWhere(fn ($query) =>
-                    $query->where('event_level', 'faculty')//Cek apabila event levelnya faculty/facultas
-                        ->where('faculty_id', $user->faculty_id)
-                )
+                    ->orWhere(fn ($query) =>
+                        $query->where('event_level', 'faculty')//Cek if event levelnya faculty/facultas
+                            ->where('faculty_id', $user->faculty_id)
+                    )
 
-                ->orWhere(fn ($query) =>
-                    $query->where('event_level', 'major') //Cek apabila event levelnya major/prodi
-                        ->where('major_id', $user->major_id)
-                )
-        );
+                    ->orWhere(fn ($query) =>
+                        $query->where('event_level', 'major') //Cek apabila event levelnya major/prodi
+                            ->where('major_id', $user->major_id)
+                    )
+            );
+        }
+        else{
+             $query->where('status', 'open');
+        }
 
-        // if (!empty($by)) {
-        //     $query->whereIn('author_username', $by);
-        // }
-
-        // if (!empty($tags)) {
-        //     $query->whereHas('tags', function ($q) use ($tags) {
-        //         $q->whereIn('name', $tags);
-        //     });
-        // }
-
-        // if (!empty($scopes)) {
-        //     $query->whereIn('scope', $scopes); // jika ada kolom scope
-        // }
-
-        // if (!empty($title)) {
-        //     $query->where('title', 'like', '%' . $title . '%');
-        // }
-
+        //Filter by Who
         $query->when($by ?? false, fn ($query) =>
             $query->whereHas('event.eventUsers', fn($query) =>
                 $query -> whereHas('role', fn($query)=>
@@ -57,6 +45,7 @@ class EventRegistration extends Model
             )
         );
 
+        //Filter by tag
         $query->when($tags ?? false, fn ($query) =>
             $query->whereHas('event', fn($query) =>
                 $query -> whereHas('tags', fn($query)=>
@@ -65,12 +54,14 @@ class EventRegistration extends Model
             )
         );
 
+        //Filter by scopes/event level
         $query->when($scopes ?? false, fn ($query) =>
             $query->whereHas('event', fn($query) =>
-                $query -> whereIn('even_level', $scopes)
+                $query -> whereIn('event_level', $scopes)
             )
         );
 
+        //Search for the title
         $query->when($title ?? false, function($query) use ($title) {
             $query->whereHas('event', function($query) use ($title) {
                 $query->where(function($query) use ($title) {
