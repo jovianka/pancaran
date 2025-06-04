@@ -12,6 +12,10 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('certificate', function () {
+    return Inertia::render('Certificate');
+})->middleware(['auth', 'verified'])->name('certificate');
+
 Route::get('search-tag', [EventController::class, 'searchTag'])->middleware(['auth', 'verified'])->name('tag.search');
 
 require __DIR__.'/settings.php';

@@ -5,19 +5,24 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, CalendarClock, Folder, User as UserIcon } from 'lucide-vue-next';
+import { BookOpen, CalendarClock, FileBadge, Folder, User, FileBadge as UserIcon } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
-        icon: UserIcon,
+        icon: User,
     },
     {
         title: 'Activity',
         href: '/activity',
         icon: CalendarClock
+    },
+    {
+        title: 'Certificate',
+        href: '/certificate',
+        icon: FileBadge
     },
 ];
 
