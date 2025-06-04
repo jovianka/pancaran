@@ -63,18 +63,4 @@ class ProfileUpdateRequest extends FormRequest
             'major_id' => $majorRules
         ];
     }
-
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array<string, string>
-     */
-    public function messages(): array
-    {
-        return [
-            'faculty_id.exists' => 'faculty doesn\'t exist',
-            'major_id.exists' => 'This major doesn\'t belong to the selected faculty'
-        ];
-    }
-
 }

@@ -10,6 +10,11 @@ import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
     {
+        title: 'Explore',
+        href: '/explore',
+        icon: Compass,
+    },
+    {
         title: 'Dashboard',
         href: '/dashboard',
         icon: User,

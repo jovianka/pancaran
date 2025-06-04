@@ -3,6 +3,8 @@
 use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Models\EventRegistration;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -11,6 +13,10 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('explore', function () {
+    return Inertia::render('Explore', ['registrations'=> EventRegistration::with(['event', 'event.eventUsers.user', 'event.eventUsers.role', 'event.tags'])->visibleToUser(Auth::user(), request(['search']))->latest()->get() ]);
+})->middleware(['auth', 'verified'])->name('explore');
 
 Route::get('certificate', function () {
     return Inertia::render('Certificate');
