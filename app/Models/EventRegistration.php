@@ -13,7 +13,7 @@ class EventRegistration extends Model
     protected $guarded = ['id'];
     protected $table = 'event_registration';
 
-    public function scopeVisibleToUser(Builder $query, $user, array $filters)
+    public function scopeVisibleToUser(Builder $query, $user, $by, $tags, $scopes, $title)
     {
         $query->where('status', 'open')->whereHas( 'event',fn ($query) =>
             $query->whereIn('event_level', ['university', 'international', 'regional', 'national'])
@@ -29,11 +29,60 @@ class EventRegistration extends Model
                 )
         );
 
-        $query->when($filters['search']??false, fn ($query, $filters) => $query->where('name', 'like', '%'. request('search').'%'));
+        // if (!empty($by)) {
+        //     $query->whereIn('author_username', $by);
+        // }
+
+        // if (!empty($tags)) {
+        //     $query->whereHas('tags', function ($q) use ($tags) {
+        //         $q->whereIn('name', $tags);
+        //     });
+        // }
+
+        // if (!empty($scopes)) {
+        //     $query->whereIn('scope', $scopes); // jika ada kolom scope
+        // }
+
+        // if (!empty($title)) {
+        //     $query->where('title', 'like', '%' . $title . '%');
+        // }
+
+        $query->when($by ?? false, fn ($query) =>
+            $query->whereHas('event.eventUsers', fn($query) =>
+                $query -> whereHas('role', fn($query)=>
+                    $query -> where('name', 'admin')
+                )->whereHas('user', fn($query) =>
+                    $query->whereIn('name', $by)
+                    )
+            )
+        );
+
+        $query->when($tags ?? false, fn ($query) =>
+            $query->whereHas('event', fn($query) =>
+                $query -> whereHas('tags', fn($query)=>
+                    $query -> whereIn('name', $tags)
+                )
+            )
+        );
+
+        $query->when($scopes ?? false, fn ($query) =>
+            $query->whereHas('event', fn($query) =>
+                $query -> whereIn('even_level', $scopes)
+            )
+        );
+
+        $query->when($title ?? false, function($query) use ($title) {
+            $query->whereHas('event', function($query) use ($title) {
+                $query->where(function($query) use ($title) {
+                    collect($title)->each(function($term) use ($query) {
+                        $query->orWhere('name', 'ilike', '%' . $term . '%');
+                    });
+                });
+            });
+        });
 
 
         return $query;
-
     }
 
     public function questions(): HasMany
