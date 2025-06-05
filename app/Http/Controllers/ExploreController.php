@@ -11,21 +11,41 @@ use Inertia\Inertia;
 class ExploreController extends Controller
 {
     public function show(Request $request){
-        $by = $request->input('by', []);
-        $tags = $request->input('tag', []);
-        $scopes = $request->input('scope', []);
-        $title = $request->input('title', []);
+        $validated = $request->validate(rules: [
+            'by' => 'array',
+            'by.*' => 'string',
+            'tag' => 'array',
+            'tag.*' => 'string',
+            'scope' => 'array',
+            'scope.*' => 'string',
+            'title' => 'array',
+            'title.*' => 'string',
+        ]);
+        $by = $validated['by'] ?? [];
+        $tags = $validated['tag'] ?? [];
+        $scopes = $validated['scope'] ?? [];
+        $title = $validated['title'] ?? [];
         $user = Auth::user();
 
-        // Misalnya kamu punya model Post:
-        $registrations = EventRegistration::with(['event.tags', 'event.eventUsers.user', 'event.eventUsers.role'])->visibleToUser($user, $by, $tags, $scopes, $title)->latest()->paginate(6);
-        $allTags = Tag::all();
-        $allUsers = User::where('type', 'organization')->get();
+        $registrations = EventRegistration::with(relations: [
+            'event.tags',
+            'event.eventUsers.user',
+            'event.eventUsers.role'
+        ])->visibleToUser(
+            user: $user,
+            by: $by,
+            tags: $tags,
+            scopes: $scopes,
+            title: $title
+        )->latest()->paginate(perPage: 2);
 
-        return Inertia::render('Explore', [
+        $allTags = Tag::all();
+        $allUsers = User::where(column: 'type', operator: 'organization')->get();
+
+        return Inertia::render(component: 'Explore', props: [
             'registrations' => $registrations,
             'tags' => $allTags,
-            'users' => $allUsers
+            'users' => $allUsers,
         ]);
     }
 }
