@@ -37,7 +37,7 @@ class ExploreController extends Controller
             tags: $tags,
             scopes: $scopes,
             title: $title
-        )->latest()->paginate(perPage: 2);
+        )->latest()->paginate(perPage: 18);
 
         $allTags = Tag::all();
         $allUsers = User::where(column: 'type', operator: 'organization')->get();
