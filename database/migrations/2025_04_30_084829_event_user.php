@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('event_user', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['active', 'inactive', 'removed']);
+            $table->enum('status', ['active', 'inactive', 'pending', 'removed']);
             $table->timestamps();
         });
     }
