@@ -3,6 +3,7 @@
 use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\ExploreController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -11,6 +12,8 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('explore', [ExploreController::class, 'show'])->middleware(['auth', 'verified'])->name('explore');
 
 Route::get('search-tag', [EventController::class, 'searchTag'])->middleware(['auth', 'verified'])->name('tag.search');
 
