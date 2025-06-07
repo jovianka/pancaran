@@ -6,7 +6,7 @@ import CardBox from '@/components/CardBox.vue';
 import {shallowRef, toRefs, watch, ref} from 'vue';
 import { useScroll } from '@vueuse/core'
 import ChipSearch from '@/components/ChipSearch.vue';
-import Pagination from '@/components/Pagination.vue';
+import Pagination from '@/components/ExplorePagination.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
