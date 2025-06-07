@@ -7,7 +7,7 @@ import { EventUser, Event, Registration, Tag, TagPivot  } from '@/pages/Explore.
 dayjs.extend(relativeTime);
 
 // Terima props event bertipe Event
-const props = defineProps<{
+defineProps<{
   registration: Registration
 }>();
 
