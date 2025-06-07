@@ -75,4 +75,9 @@ class Event extends Model
     {
         return $this->hasMany(ContactPerson::class);
     }
+
+    public function registration(): HasMany
+    {
+        return $this->hasMany(EventRegistration::class);
+    }
 }

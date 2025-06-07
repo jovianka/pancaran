@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         $users = User::all();
 
         foreach ($events as $event){
-            $tagnumber = rand(2, 5);
+            $tagnumber = rand(1, 3);
             $tags = $tagcollection->random($tagnumber);
             $user = $users->where('type', 'organization')->random();
             $role = EventRole::where('name', 'admin')->first();

@@ -5,10 +5,15 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, CalendarClock, Folder, User as UserIcon } from 'lucide-vue-next';
+import { BookOpen, CalendarClock, Folder, User as UserIcon, CompassIcon} from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
+    {
+        title: 'Explore',
+        href: '/explore',
+        icon: CompassIcon,
+    },
     {
         title: 'Dashboard',
         href: '/dashboard',
