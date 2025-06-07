@@ -224,7 +224,7 @@ watch(chips, (newChips)=>{
 }, {deep:true})
 
 watch(input, () => {
-  inputProcess()
+    inputProcess()
 })
 
 watch(() => props.filterFromCard, ()=>{
@@ -244,19 +244,19 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  sessionStorage.removeItem('search_chips')
+    sessionStorage.removeItem('search_chips')
 })
 
 </script>
 
 <template>
   <div class="searchbox w-full max-w-2xl px-5 lg:px-6 my-4">
-    <div class="flex items-center bg-gray-50 border border-gray-300 w-full py-3 px-4 rounded-lg gap-3 text-sm focus-within:ring-[1.5px] ring-gray-500">
+    <div class="flex items-center bg-gray-50 dark:bg-gray-900 border border-gray-300 w-full py-3 px-4 rounded-lg gap-3 text-sm focus-within:ring-[1.5px] ring-gray-500">
         <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
         </svg>
         <input
-        class="w-full outline-none ring-0 focus:outline-none focus:ring-0 focus:border-transparent text-black"
+        class="w-full outline-none ring-0 focus:outline-none focus:ring-0 focus:border-transparent text-black dark:text-white "
         v-model="input"
         @keydown.enter.prevent="applySuggestion"
         @keydown.tab.prevent="applySuggestion"
@@ -270,10 +270,10 @@ onBeforeUnmount(() => {
       <span
         v-for="(chip, index) in chips"
         :key="chip.key + chip.value"
-        class="inline-flex items-center gap-1 bg-blue-100 px-2 py-1 rounded mr-2"
+        class="inline-flex items-center gap-1 bg-blue-100 px-2 py-1 rounded mr-2 font-medium"
       >
         {{ chip.key }} {{ chip.value }}
-        <button class="text-gray-500 font-bold" @click="removeTag(index)"><X class="w-3 h-3"></X></button>
+        <button class="text-red-500 font-bold" @click="removeTag(index)"><X class="w-3 h-3"></X></button>
       </span>
     </div>
 
