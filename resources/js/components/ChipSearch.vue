@@ -256,7 +256,7 @@ onBeforeUnmount(() => {
             <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
         </svg>
         <input
-        class="w-full outline-none ring-0 focus:outline-none focus:ring-0 focus:border-transparent"
+        class="w-full outline-none ring-0 focus:outline-none focus:ring-0 focus:border-transparent text-black"
         v-model="input"
         @keydown.enter.prevent="applySuggestion"
         @keydown.tab.prevent="applySuggestion"
@@ -279,7 +279,7 @@ onBeforeUnmount(() => {
 
     <ul
       v-if="suggestions.length"
-      class="suggestions absolute bg-white shadow w-full max-w-xl rounded-b-lg z-10"
+      class="suggestions absolute bg-white shadow w-full max-w-xl rounded-b-lg z-10 dark:text-black"
     >
       <li
         v-for="(item, index) in suggestions"
