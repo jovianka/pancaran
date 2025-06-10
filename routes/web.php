@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\CertificateDetailController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\EventRegistration;
@@ -21,6 +22,9 @@ Route::get('explore', function () {
 Route::get('certificate', function () {
     return Inertia::render('Certificate');
 })->middleware(['auth', 'verified'])->name('certificate');
+
+Route::get('/certificate/{id}', [CertificateDetailController::class, 'show'])
+    ->middleware(['auth', 'verified'])->name('certificates.show');
 
 Route::get('search-tag', [EventController::class, 'searchTag'])->middleware(['auth', 'verified'])->name('tag.search');
 

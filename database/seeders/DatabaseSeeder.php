@@ -5,8 +5,10 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Event;
 use App\Models\EventRole;
+use App\Models\DetailSkp;
 use Illuminate\Database\Seeder;
 use App\Models\Tag;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -37,8 +39,11 @@ class DatabaseSeeder extends Seeder
 
             $tagIds = $tags->pluck('id');
             $event->tags()->attach($tagIds);
-
         };
+
+        $this->call([
+            DetailSkpSeeder::class,
+        ]);
     }
 }
 

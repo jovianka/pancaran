@@ -16,8 +16,13 @@ class DetailSkpFactory extends Factory
      */
     public function definition(): array
     {
+        
         return [
-            //
+            'category'     => $this->faker->randomElement(['Pelatihan', 'Seminar', 'Workshop']),
+            'description'  => $this->faker->sentence(),
+            'role'         => $this->faker->randomElement(['Peserta', 'Pemateri', 'Panitia']),
+            'event_level'  => $this->faker->randomElement(['Nasional', 'Internasional', 'Lokal']),
+            'skp'          => $this->faker->numberBetween(1, 20),
         ];
     }
 }
