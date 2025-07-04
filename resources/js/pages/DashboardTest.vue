@@ -38,34 +38,34 @@ onMounted(() => {
   })
 })
 
-defineProps<{
-  profileData: Record<string, string>;
-  userType: string;
-}>();
+const profileData = {
+  Name: 'Badan Eksekutif Mahasiswa Fakultas Kedokteran',
+  'Jenis Organisasi': 'Eksekutif Mahasiswa',
+  Scope: 'Fakultas Kedokteran',
+  'Tahun berdiri': '22 January 1999',
+  Status: 'Active',
+}
 </script>
 
 <template>
   <Head title="Dashboard" />
   <AppLayout :breadcrumbs="breadcrumbs">
+    <!-- screen -->
     <div class="flex flex-col h-dvh gap-4 p-4">
       <!-- top -->
       <div class="relative flex-1 h-full flex flex-col md:flex-row gap-4">
         <!-- left -->
         <div class="relative h-full flex flex-col space-y-4">
           <div class="relative w-full h-[40vh] md:h-full border rounded-xl shadow-md flex items-center justify-center">
-            <p class="text-6xl">
-              {{userType === 'organization' ? '🏢' : '🧑‍🎓' }}
-            </p>
+            <p class="text-6xl">🧑‍🎓</p>
           </div>
           <button class="relative w-full md:w-[250px] rounded-xl shadow-md bg-blue-500 p-2">
             <p class="text-lg text-white font-bold">Edit Profile</p>
           </button>
         </div>
-
         <!-- right -->
         <ProfileSection :profileData="profileData" />
       </div>
-
       <!-- bottom -->
       <div class="relative flex-1 h-full flex flex-col md:flex-row gap-8 p-4 border rounded-xl shadow-md">
         <!-- left -->
@@ -88,5 +88,6 @@ defineProps<{
         </div>
       </div>
     </div>
+
   </AppLayout>
 </template>
