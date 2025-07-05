@@ -16,10 +16,6 @@ return new class extends Migration
             $table->foreignId('major_id')->references('id')->on('major');
         });
 
-        // Schema::table('event', function (Illuminate\Database\Schema\Blueprint $table) {
-        //     $table->foreignId('tag_id')->nullable()->references('id')->on('tag')->onDelete('set null');
-        // });
-
         Schema::table('major', function (Blueprint $table) {
             $table->foreignId('faculty_id')->references('id')->on('faculty');
         });
@@ -56,6 +52,7 @@ return new class extends Migration
             $table->foreignId('user_id')->references('id')->on('users');
             $table->foreignId('event_id')->references('id')->on('event');
             $table->foreignId('event_role_id')->references('id')->on('event_role');
+            $table->foreignId('detail_skp_id')->nullable()->references('id')->on('detail_skp')->onDelete('set null');
         });
 
         Schema::table('surat_tugas', function (Blueprint $table) {

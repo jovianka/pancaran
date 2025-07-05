@@ -28,12 +28,16 @@ export interface SharedData extends PageProps {
 
 export interface User {
     id: number;
+    nim: string;
     name: string;
     email: string;
     avatar?: string;
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
+    faculty_id: number;
+    major_id: number;
+    type: string;
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;

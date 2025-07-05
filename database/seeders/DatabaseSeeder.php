@@ -44,6 +44,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DetailSkpSeeder::class,
         ]);
+        $this->call([
+            CertificateSeeder::class,
+        ]);
     }
 }
 

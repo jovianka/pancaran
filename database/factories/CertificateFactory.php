@@ -17,8 +17,8 @@ class CertificateFactory extends Factory
     public function definition(): array
     {
         return [
-            'nomor_surat' => fake()->number,
-            'file' => 'https://unsplash.com/photos/anime-character-collage-photo-on-black-wooden-shelf-IxDPZ-AHfoI'
+            'nomor_surat' => fake()->numberBetween(1, 300),
+            'file' => 'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
         ];
     }
 }

@@ -4,8 +4,9 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\CertificateDetailController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Models\EventRegistration;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ExploreController;
+use App\Http\Controllers\CertificateController;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -15,13 +16,11 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('explore', function () {
-    return Inertia::render('Explore', ['registrations'=> EventRegistration::with(['event', 'event.eventUsers.user', 'event.eventUsers.role', 'event.tags'])->visibleToUser(Auth::user(), request(['search']))->latest()->get() ]);
-})->middleware(['auth', 'verified'])->name('explore');
+Route::get('explore', [ExploreController::class, 'show'])->middleware(['auth', 'verified'])->name('explore');
 
-Route::get('certificate', function () {
-    return Inertia::render('Certificate');
-})->middleware(['auth', 'verified'])->name('certificate');
+Route::get('/certificate', [CertificateController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('certificate');
 
 Route::get('/certificate/{id}', [CertificateDetailController::class, 'show'])
     ->middleware(['auth', 'verified'])->name('certificates.show');

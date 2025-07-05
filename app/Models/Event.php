@@ -8,16 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Builder;
 
 class Event extends Model
 {
-    use HasFactory;
     protected $guarded = ['id'];
     protected $table = 'event';
 
-    // public $timestamps = false;
-
+    use HasFactory;
 
     public function users(): BelongsToMany
     {
@@ -79,8 +76,8 @@ class Event extends Model
         return $this->hasMany(ContactPerson::class);
     }
 
-    public function registration(): BelongsTo
+    public function registration(): HasMany
     {
-        return $this->belongsTo(EventRegistration::class);
+        return $this->hasMany(EventRegistration::class);
     }
 }

@@ -5,31 +5,44 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, CalendarClock, CompassIcon, FileBadge, Folder, User, CompassIcon as UserIcon } from 'lucide-vue-next';
+import { BookOpen, CalendarClock, CompassIcon, FileBadge, Folder, User as UserIcon } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
 
-const mainNavItems: NavItem[] = [
+const page = usePage() as { props: { auth?: { user?: { type: string } } } }
+const userType = computed(() => page.props.auth?.user?.type)
+
+const mainNavItems = computed<NavItem[]>(() => {
+  const items: NavItem[] = [
     {
-        title: 'Explore',
-        href: '/explore',
-        icon: CompassIcon,
+      title: 'Explore',
+      href: '/explore',
+      icon: CompassIcon,
     },
     {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: User,
+      title: 'Dashboard',
+      href: '/dashboard',
+      icon: UserIcon,
     },
     {
-        title: 'Activity',
-        href: '/activity',
-        icon: CalendarClock
+      title: 'Activity',
+      href: '/activity',
+      icon: CalendarClock
     },
-    {
-        title: 'Certificate',
-        href: '/certificate',
-        icon: FileBadge
-    },
-];
+  ]
+
+  if (userType.value === 'student') {
+    items.push({
+      title: 'Certificate',
+      href: '/certificate',
+      icon: FileBadge
+    })
+  }
+
+  return items
+})
+
 
 const footerNavItems: NavItem[] = [
     {
@@ -43,6 +56,8 @@ const footerNavItems: NavItem[] = [
         icon: BookOpen,
     },
 ];
+
+
 </script>
 
 <template>
