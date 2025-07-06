@@ -59,9 +59,6 @@ const filteredCertificates = computed(() => {
   });
 });
 
-console.log(JSON.stringify(props.certificates, null, 2))
-
-
 </script>
 
 <template>
@@ -84,5 +81,6 @@ console.log(JSON.stringify(props.certificates, null, 2))
             />
         </div>
 
+        
     </AppLayout>
 </template>

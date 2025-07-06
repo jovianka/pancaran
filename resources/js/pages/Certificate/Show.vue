@@ -37,7 +37,7 @@ const close = () => {
 
 const breadcrumbs = [
   {
-    title: 'Certificate/ Certificate Detail',
+    title: 'Certificate / Certificate Detail',
     href: '/certificate/' + props.certificate.id,
   },
 ]
