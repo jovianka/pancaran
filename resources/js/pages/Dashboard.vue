@@ -7,11 +7,22 @@ import { Chart, BarController, BarElement, CategoryScale, LinearScale } from 'ch
 import ProfileSection from '@/components/ProfileSection.vue'
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
+    { title: 'Dashboard', href: '/dashboard' },
 ];
+
+const props = defineProps<{
+  profileData: Record<string, string>;
+  userType: string;
+  insight: {
+    skpTotal?: number;
+    certificatesTotal?: number;
+    eventsJoined?: number;
+    ongoingActivity: number;
+    activityCreated?: number;
+    chartLabels: string[];
+    chartValues: number[];
+  };
+}>();
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale)
 
@@ -21,10 +32,10 @@ onMounted(() => {
   new Chart(chartCanvas.value, {
     type: 'bar',
     data: {
-      labels: ['Kepemimpinan', 'Minat dan Bakat', 'Pengabdian', 'Penalaran Ilmiah'],
+      labels: props.insight.chartLabels,
       datasets: [{
-        label: 'Aktivitas Organisasi',
-        data: [10, 18, 7, 12],
+        label: 'Insight',
+        data: props.insight.chartValues,
         backgroundColor: '#3B82F6',
         maxBarThickness: 60,
       }],
@@ -35,14 +46,10 @@ onMounted(() => {
       scales: { y: { beginAtZero: true } },
       plugins: { legend: { display: false } }
     }
-  })
-})
-
-defineProps<{
-  profileData: Record<string, string>;
-  userType: string;
-}>();
+  });
+});
 </script>
+
 
 <template>
   <Head title="Dashboard" />
@@ -68,23 +75,46 @@ defineProps<{
 
       <!-- bottom -->
       <div class="relative flex-1 h-full flex flex-col md:flex-row gap-8 p-4 border rounded-xl shadow-md">
-        <!-- left -->
-        <div class="relative w-[200px] h-full flex flex-col gap-4">
+        <!-- left (insight text) -->
+        <div class="relative w-[250px] flex flex-col gap-4">
           <div>
-              <strong class="text-xl md:text-2xl">Insight</strong>
+            <strong class="text-xl md:text-2xl">Insight</strong>
           </div>
-          <div>
-            <p class="text-gray-500">Activity Created</p>
-            <p class="font-bold">25</p>
-          </div>
-          <div>
-            <p class="text-gray-500">On-Going Activity</p>
-            <p class="font-bold">3</p>
-          </div>
+
+          <template v-if="userType === 'student'">
+            <div>
+              <p class="text-gray-500">SKP Total</p>
+              <p class="font-bold">{{ insight.skpTotal }}</p>
+            </div>
+            <div>
+              <p class="text-gray-500">Certificates Total</p>
+              <p class="font-bold">{{ insight.certificatesTotal }}</p>
+            </div>
+            <div>
+              <p class="text-gray-500">Events Joined</p>
+              <p class="font-bold">{{ insight.eventsJoined }}</p>
+            </div>
+            <div>
+              <p class="text-gray-500">On-Going Activity</p>
+              <p class="font-bold">{{ insight.ongoingActivity }}</p>
+            </div>
+          </template>
+
+          <template v-else>
+            <div>
+              <p class="text-gray-500">Activity Created</p>
+              <p class="font-bold">{{ insight.activityCreated }}</p>
+            </div>
+            <div>
+              <p class="text-gray-500">On-Going Activity</p>
+              <p class="font-bold">{{ insight.ongoingActivity }}</p>
+            </div>
+          </template>
         </div>
-        <!-- right -->
-        <div class="relative flex-1">
-          <canvas ref="chartCanvas" class="w-fill h-fill" />
+
+        <!-- right (chart) -->
+        <div class="relative flex-1 h-[300px]">
+          <canvas ref="chartCanvas" class="w-full h-full" />
         </div>
       </div>
     </div>

@@ -17,7 +17,7 @@ class EventFactory extends Factory
      */
     public function definition(): array
     {
-        // $status = ['ongoing', 'finished'];
+        $status = ['ongoing', 'finished'];
         return [
             'name'=>fake()->sentence(2),
             'description'=>fake()->paragraph(4),
@@ -25,8 +25,8 @@ class EventFactory extends Factory
             'start_date'=>fake()->dateTimeBetween('-1 month', 'now'),
             'end_date'=>fake()->dateTimeBetween('now', '+1 month' ),
             'job_description'=>'https://docs.google.com/document/d/1WmGE0q_I9R5Ih0mQZvIf5-Ew1mFkkZJIpGYMcgEDlsI',
-            'status' => 'ongoing'
-            // 'status' => Arr::random($status), //for random status
+            // 'status' => 'ongoing'
+            'status' => Arr::random($status), //for random status
         ];
     }
 

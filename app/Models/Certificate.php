@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Certificate extends Model
 {
+    use HasFactory;
     protected $guarded = ['id'];
     protected $table = 'certificate';
 
@@ -17,7 +19,7 @@ class Certificate extends Model
 
     public function detailSkp(): BelongsTo
     {
-        return $this->belongsTo(DetailSkp::class);
+        return $this->belongsTo(DetailSkp::class, 'detail_skp_id');
     }
 
     public function event(): BelongsTo

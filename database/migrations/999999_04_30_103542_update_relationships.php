@@ -52,6 +52,7 @@ return new class extends Migration
             $table->foreignId('user_id')->references('id')->on('users');
             $table->foreignId('event_id')->references('id')->on('event');
             $table->foreignId('event_role_id')->references('id')->on('event_role');
+            $table->foreignId('detail_skp_id')->nullable()->references('id')->on('detail_skp');
         });
 
         Schema::table('surat_tugas', function (Blueprint $table) {
