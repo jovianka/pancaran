@@ -17,6 +17,15 @@ Route::get('explore', [ExploreController::class, 'show'])->middleware(['auth', '
 
 Route::get('search-tag', [EventController::class, 'searchTag'])->middleware(['auth', 'verified'])->name('tag.search');
 
+
+Route::get('/event-detail', function () {
+    return Inertia::render('EventDetail');
+});
+
+Route::get('/members', function () {
+    return Inertia::render('pageMember');
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/activity.php';
