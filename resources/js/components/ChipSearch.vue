@@ -40,7 +40,6 @@ const suggestions = ref<string[]>([])
 const currentPrefix = ref("")
 const selectedSuggestion = ref(0)
 
-console.log(chips.value)
 const data = {
     users: props.users.map(user => user.name),
     tags: props.tags.map(tag => tag.name),
@@ -204,17 +203,10 @@ function extractParams(title: string = "") {
 
 async function sendSearchRequest(title: string = "") {
     const payload = extractParams(title)
-    console.log(chips.value)
     router.get('explore', payload, {
         preserveState: true,
         preserveScroll: true,
         only: [],
-        onSuccess: (page) => {
-            console.log('Results:', page.props)
-        },
-        onError: (errors) => {
-            console.error('Error:', errors)
-        }
     })
 }
 
@@ -232,7 +224,6 @@ watch(() => props.filterFromCard, ()=>{
 })
 
 onMounted(() => {
-    console.log('Mounted! Trying to load chips from localStorage...')
     const savedChips = sessionStorage.getItem('search_chips')
     if (savedChips) {
         try {
