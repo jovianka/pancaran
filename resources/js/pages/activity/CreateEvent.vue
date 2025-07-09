@@ -31,7 +31,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
     {
         title: 'Create Event',
-        href: '/activity/create-event',
+        href: '/event/create',
     },
 ];
 
@@ -205,7 +205,6 @@ watch(endDate, () => {
                         id="poster"
                         ref="poster"
                         type="file"
-                        required
                         accept="image/png, image/jpeg, image/jpg"
                         @input="form.poster = $event.target.files[0]"
                         :class="
@@ -246,7 +245,7 @@ watch(endDate, () => {
                         <TagsInputInput
                             placeholder="Add tags"
                             @input.prevent="
-                                (event) => {
+                                (event: any) => {
                                     searchTerm = event.target.value;
                                     loadingTags = true;
                                     searchTag(searchTerm);

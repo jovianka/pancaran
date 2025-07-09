@@ -7,7 +7,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreEventRequest extends FormRequest
+class EditEventRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -37,9 +37,10 @@ class StoreEventRequest extends FormRequest
         return [
             'poster' => 'nullable|file|image',
             'name' => 'required|string|max:255',
+            'surat_tugas' => 'nullable|string',
             'description' => 'required|string|max:1000',
             'event_level' => 'required|string|in:international,regional,national,university,faculty,major',
-            'job_description' => 'required|file|extensions:pdf',
+            'job_description' => 'nullable|file|extensions:pdf',
             'faculty_id' => 'required|integer|exists:faculty,id',
             'major_id' => $majorRules,
             'start_date' => 'required|date',
