@@ -235,7 +235,7 @@ onMounted(() => {
                             </Tooltip>
                             <Tooltip :delay-duration="200">
                                 <TooltipTrigger as-child>
-                                    <Link href="" class="hover:bg-foreground/60 block size-fit rounded-full bg-white p-2 transition-all duration-300"
+                                    <Link :href="route('members.view', {id: event.id})" class="hover:bg-foreground/60 block size-fit rounded-full bg-white p-2 transition-all duration-300"
                                         ><UserPen class="size-4 text-black"
                                     /></Link>
                                 </TooltipTrigger>

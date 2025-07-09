@@ -20,7 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('event/{id}/edit', [EventController::class, 'edit'])->name('event.edit');
     Route::post('event/{id}/edit', [EventController::class, 'update'])->name('event.update');
 
-    Route::post('event/{id}/members', [EventController::class, 'membersPage'])->name('members.view');
+    Route::get('event/{id}/members', [EventController::class, 'membersPage'])->name('members.view');
 
     Route::delete('event/{id}/delete-poster', [EventController::class, 'removePoster'])->name('event.removePoster');
 
