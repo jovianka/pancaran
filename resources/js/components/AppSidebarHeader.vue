@@ -12,7 +12,7 @@ withDefaults(defineProps<{
 
 <template>
     <header
-        class="flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4"
+        class="flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4 z-50"
     >
         <div class="flex items-center gap-2">
             <SidebarTrigger class="-ml-1 hover:cursor-pointer" />
