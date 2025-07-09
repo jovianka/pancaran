@@ -255,7 +255,7 @@ const submitUpdateRole = (roleId: number) => {
 };
 
 const submitDeleteRole = (roleId: number) => {
-    router.delete(`/event/edit/${props.event.id}/delete-role/${roleId}`, {
+    router.delete(`/event/${props.event.id}/edit/delete-role/${roleId}`, {
         preserveScroll: true,
     });
 };
