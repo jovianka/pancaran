@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RoleSeeder::class, //Seeding untuk tabel event_role
+            DetailSkpSeeder::class
         ]);
 
         $events = Event::all();

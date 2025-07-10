@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Auth;
 
 class Event extends Model
 {
@@ -18,7 +21,7 @@ class Event extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'event_user')->withPivot('status')->withTimestamps();
+        return $this->belongsToMany(User::class, 'event_user')->withPivot(['status', 'event_role_id'])->withTimestamps();
     }
 
     public function eventUsers(): HasMany
@@ -79,5 +82,26 @@ class Event extends Model
     public function registration(): HasMany
     {
         return $this->hasMany(EventRegistration::class);
+    }
+
+    /**
+     * Select events where current the user belongs to.
+     */
+    #[Scope]
+    protected function userActivities($query = null): Builder
+    {
+        return $query->whereHas('users', function (Builder $userQuery) {
+            $userQuery->where('user_id', '=', Auth::id())
+                ->whereNot('status', '=', 'removed');
+        });
+    }
+
+    /**
+     * Select events where current the user belongs to.
+     */
+    #[Scope]
+    protected function ongoingUserActivities($query = null): Builder
+    {
+        return $query->userActivities()->where('status', '=', 'ongoing');
     }
 }

@@ -7,8 +7,9 @@ import { TaskList as ttTaskList } from '@tiptap/extension-task-list';
 import { TextAlign as ttTextAlign } from '@tiptap/extension-text-align';
 import { Typography as ttTypography } from '@tiptap/extension-typography';
 import { Underline as ttUnderline } from '@tiptap/extension-underline';
+import { Placeholder as ttPlaceholder } from '@tiptap/extension-placeholder';
 import { StarterKit } from '@tiptap/starter-kit';
-import { EditorContent, useEditor } from '@tiptap/vue-3';
+import { Content, EditorContent, useEditor } from '@tiptap/vue-3';
 import {
     AlignCenter,
     AlignJustify,
@@ -26,16 +27,13 @@ import {
     TextQuote,
     Underline,
 } from 'lucide-vue-next';
-import { onMounted } from 'vue';
 import Button from './ui/button/Button.vue';
 import Toggle from './ui/toggle/Toggle.vue';
 
-const props = defineProps(['placeholder'])
 const model = defineModel();
-const placeholderContent = props.placeholder ?? "<p>I'm running Tiptap with Vue.js. 🎉</p>"
 
 const tiptapEditor = useEditor({
-    content: placeholderContent,
+    content: model.value as Content,
     extensions: [
         StarterKit,
         ttUnderline,
@@ -50,6 +48,9 @@ const tiptapEditor = useEditor({
             alignments: ['left', 'center', 'right', 'justify'],
         }),
         ttTypography,
+        ttPlaceholder.configure({
+            placeholder: 'Write something'
+        }),
     ],
     editorProps: {
         attributes: {
@@ -61,9 +62,6 @@ const tiptapEditor = useEditor({
     },
 });
 
-onMounted(() => {
-    model.value = tiptapEditor.value?.getJSON();
-});
 </script>
 
 <template>

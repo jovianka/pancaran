@@ -20,8 +20,10 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->string('job_description'); // file
-            $table->jsonb('requirements')->nullable();
+            $table->string('requirements')->nullable();
             $table->enum('status', ['ongoing', 'finished']);
+            $table->index('name');
+            $table->index('description');
             $table->timestamps();
         });
     }

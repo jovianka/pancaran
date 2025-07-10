@@ -26,9 +26,13 @@ const mainNavItems = computed<NavItem[]>(() => {
       icon: UserIcon,
     },
     {
-      title: 'Activity',
-      href: '/activity',
-      icon: CalendarClock
+        title: 'Activity',
+        href: '/activity',
+        icon: CalendarClock,
+        children: [
+            { title: 'Your Activity', href: '/activity' },
+            { title: 'Create an Event', href: '/event/create' },
+        ],
     },
   ]
 

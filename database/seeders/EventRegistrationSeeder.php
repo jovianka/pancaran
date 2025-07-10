@@ -29,6 +29,8 @@ class EventRegistrationSeeder extends Seeder
                 EventRegistration::create([
                     'event_id' => $event->id,
                     'poster'=>'https://images.unsplash.com/photo-1584448141569-69f342da535c',
+                    'start_date' => fake()->dateTimeBetween('-1 month', 'now'),
+                    'end_date' => fake()->dateTimeBetween('now', '+1 month'),
                     'type' => 'recruitment',
                     'status' => Arr::random($status),
                 ]);
@@ -38,6 +40,8 @@ class EventRegistrationSeeder extends Seeder
                 EventRegistration::create([
                     'event_id' => $event->id,
                     'poster'=>'https://images.unsplash.com/photo-1584448141569-69f342da535c',
+                    'start_date' => fake()->dateTimeBetween('-1 month', 'now'),
+                    'end_date' => fake()->dateTimeBetween('now', '+1 month'),
                     'type' => 'registration',
                     'status' => Arr::random($status),
                 ]);

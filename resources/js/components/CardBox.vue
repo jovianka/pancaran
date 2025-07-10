@@ -53,7 +53,7 @@ function sendOrganization(data:string){
         </div>
         <div class="flex justify-between items-center mt-5">
             <button class="bg-blue-500 px-4 py-1 rounded-md">
-                <Link href="#" class="inline-flex items-center font-medium text-sm text-white dark:text-primary-500 hover:underline">
+                <Link :href="`/explore/${registration.event.id}`" class="inline-flex items-center font-medium text-sm text-white dark:text-primary-500 hover:underline">
                     Read more
                 </Link>
             </button>

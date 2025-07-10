@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Certificate extends Model
 {
@@ -19,7 +20,7 @@ class Certificate extends Model
 
     public function detailSkp(): BelongsTo
     {
-        return $this->belongsTo(DetailSkp::class);
+        return $this->belongsTo(DetailSkp::class, 'detail_skp_id');
     }
 
     public function event(): BelongsTo
@@ -29,6 +30,6 @@ class Certificate extends Model
 
     public function role(): BelongsTo
     {
-        return $this->belongsTo(EventRole::class);
+        return $this->belongsTo(EventRole::class, 'event_role_id');
     }
 }

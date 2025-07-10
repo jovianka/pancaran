@@ -2,23 +2,30 @@
 
 namespace Database\Factories;
 
+use App\Models\Certificate;
+use App\Models\User;
+use App\Models\Event;
+use App\Models\EventRole;
+use App\Models\DetailSkp;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Certificate>
+ * @extends Factory<\App\Models\Certificate>
  */
 class CertificateFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Certificate::class;
+
     public function definition(): array
     {
         return [
-            'nomor_surat' => fake()->numberBetween(1, 300),
-            'file' => 'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            'title' => $this->faker->words(3, true),
+            'nomor_surat' => strtoupper($this->faker->bothify('SKP/###/???')),
+            'file' => $this->faker->word() . '.pdf', // dummy filename
+            'user_id' => User::inRandomOrder()->first()?->id ?? 1,
+            'event_id' => Event::inRandomOrder()->first()?->id ?? 1,
+            'event_role_id' => EventRole::inRandomOrder()->first()?->id ?? 1,
+            'detail_skp_id' => DetailSkp::inRandomOrder()->first()->id,
         ];
     }
 }
