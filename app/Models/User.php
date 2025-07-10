@@ -81,6 +81,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Event::class, 'event_user')->withPivot('status')->withTimestamps();
     }
-
+    public function eventUsers(): HasMany
+    {
+        return $this->hasMany(EventUser::class);
+    }
 
 }

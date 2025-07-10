@@ -36,7 +36,7 @@ const mainNavItems = computed<NavItem[]>(() => {
     items.push({
       title: 'Certificate',
       href: '/certificate',
-      icon: FileBadge
+      icon: FileBadge,
     })
   }
 
