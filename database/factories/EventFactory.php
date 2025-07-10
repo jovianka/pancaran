@@ -25,7 +25,7 @@ class EventFactory extends Factory
             'poster' => null,
             'start_date' => fake()->dateTimeBetween('-1 month', 'now'),
             'end_date' => fake()->dateTimeBetween('now', '+1 month'),
-            'job_description' => 'https://docs.google.com/document/d/1WmGE0q_I9R5Ih0mQZvIf5-Ew1mFkkZJIpGYMcgEDlsI',
+            'job_description' => '',
             'status' => 'ongoing'
             // 'status' => Arr::random($status), //for random status
         ];

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('quota')->default(0);
+            $table->jsonb('certificate_schema')->nullable();
+            $table->string('certificate_basepdf')->nullable();
             $table->timestamps();
         });
     }
