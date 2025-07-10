@@ -21,7 +21,7 @@ class Event extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'event_user')->withPivot('status')->withTimestamps();
+        return $this->belongsToMany(User::class, 'event_user')->withPivot(['status', 'event_role_id'])->withTimestamps();
     }
 
     public function eventUsers(): HasMany

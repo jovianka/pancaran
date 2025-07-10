@@ -153,7 +153,7 @@ const filteredTags = computed(() => {
 
 const eventEditForm = useForm({
     name: props.event.name ?? '',
-    surat_tugas: props.event.surat_tugas.nomor ?? '',
+    surat_tugas: props.event.surat_tugas?.nomor ?? '',
     description: props.event.description ?? '',
     poster: null,
     event_level: props.event.event_level ?? '',
@@ -391,7 +391,7 @@ watch(endDate, () => {
                         <Label for="suratTugas">Nomor Surat Tugas</Label>
                         <span class="opacity-50">(dibutuhkan sebelum membuat registrasi peserta)</span>
                     </div>
-                    <Input id="suratTugas" type="text" required autofocus autocomplete="suratTugas" v-model="eventEditForm.surat_tugas" placeholder="Nomor Surat Tugas" />
+                    <Input id="suratTugas" type="text" autofocus autocomplete="suratTugas" v-model="eventEditForm.surat_tugas" placeholder="Nomor Surat Tugas" />
                     <InputError :message="eventEditForm.errors.surat_tugas" />
                 </div>
                 <div class="grid gap-2" v-if="tags">
@@ -560,6 +560,7 @@ watch(endDate, () => {
                         "
                     />
                     <iframe
+                        v-if="jobDescriptionURL || props.event.job_description !== ''"
                         :src="
                             jobDescriptionURL ?? route('event.getJobDescription', { event_id: props.event.id, filename: props.event.job_description })
                         "
@@ -698,7 +699,7 @@ watch(endDate, () => {
             <div class="mt-5 flex flex-row flex-wrap gap-5">
                 <Card class="w-lg" v-for="role of eventRoles" :key="role.id">
                     <CardHeader>
-                        <CardTitle>{{ role.name }}</CardTitle>
+                        <CardTitle>{{ role.name.toUpperCase() }}</CardTitle>
                     </CardHeader>
                     <CardContent class="text-foreground/70 text-sm">
                         <p v-if="role.detail_skp">Kategori SKP: {{ role.detail_skp.category }}</p>
