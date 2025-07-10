@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         $users = User::all();
 
         foreach ($events as $event){
-            $tagnumber = rand(2, 5);
+            $tagnumber = rand(1, 3);
             $tags = $tagcollection->random($tagnumber);
             $user = $users->where('type', 'organization')->random();
             $role = EventRole::where('name', 'admin')->first();
@@ -32,8 +32,6 @@ class DatabaseSeeder extends Seeder
 
             $user->events()->attach($event->id, [
                 'event_role_id' => $role->id,
-                'faculty_id' => $user->faculty_id,
-                'major_id' => $user->major_id,
                 'status' => 'active',
             ]);
 

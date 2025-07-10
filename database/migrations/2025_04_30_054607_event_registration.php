@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('event_registration', function (Blueprint $table) {
             $table->id();
-            $table->string('poster');
+            $table->string('poster')->nullable();
+            $table->date('start_date');
+            $table->date('end_date');
             $table->enum('type', ['registration', 'recruitment']);
             $table->enum('status', ['open', 'closed']);
             $table->timestamps();

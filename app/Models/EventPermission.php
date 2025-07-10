@@ -9,10 +9,9 @@ class EventPermission extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'event_permission';
-
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(EventRole::class, 'event_role_permission');
+        return $this->belongsToMany(EventRole::class, 'event_role_permission')->withTimestamps();
     }
 }
 

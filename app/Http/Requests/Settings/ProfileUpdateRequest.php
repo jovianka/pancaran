@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Settings;
 
 use App\Models\User;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -35,17 +36,31 @@ class ProfileUpdateRequest extends FormRequest
             ];
         }
 
+        $majorRules = [];
+        if ($this->user()->type == 'student') {
+            $majorRules = [
+                'integer',
+                Rule::exists('major', 'id')->where('faculty_id', $this->faculty_id),
+                'required_with:faculty_id'
+            ];
+        } else {
+            $majorRules = [
+                'integer',
+                Rule::exists('major', 'id')->where(function (Builder $query) {
+                    $query->where('faculty_id', '=', $this->faculty_id)
+                        ->orWhere('name', '=', 'Any');
+                }),
+                'required_with:faculty_id'
+            ];
+        }
+
         return [
             'avatar' => 'nullable|file|image',
             'nim' => $nimRules,
             'name' => 'string|max:255',
             'email' => $emailRules,
             'faculty_id' => 'integer|exists:faculty,id',
-            'major_id' => [
-                'integer',
-                Rule::exists('major', 'id')->where('faculty_id', $this->faculty_id),
-                'required_with:faculty_id'
-            ]
+            'major_id' => $majorRules
         ];
     }
 

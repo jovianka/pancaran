@@ -13,65 +13,65 @@ class FacultySeeder extends Seeder
     public function run(): void
     {
         $fakultasProdi = [
-            'Fakultas Ilmu Budaya' => [
+            'Ilmu Budaya' => [
                 'Sastra Indonesia',
                 'Sastra Inggris',
                 'Sastra Jepang',
                 'Sastra Bali',
                 'Ilmu Sejarah',
             ],
-            'Fakultas Kedokteran' => [
+            'Kedokteran' => [
                 'Pendidikan Dokter',
                 'Ilmu Keperawatan',
                 'Psikologi',
                 'Kesehatan Masyarakat',
             ],
-            'Fakultas Hukum' => [
+            'Hukum' => [
                 'Ilmu Hukum',
             ],
-            'Fakultas Teknik' => [
+            'Teknik' => [
                 'Teknik Sipil',
                 'Teknik Elektro',
                 'Teknik Mesin',
                 'Teknik Arsitektur',
                 'Teknik Industri',
             ],
-            'Fakultas Pertanian' => [
+            'Pertanian' => [
                 'Agroteknologi',
                 'Agribisnis',
             ],
-            'Fakultas Peternakan' => [
+            'Peternakan' => [
                 'Ilmu Peternakan',
             ],
-            'Fakultas Ekonomi dan Bisnis' => [
+            'Ekonomi dan Bisnis' => [
                 'Manajemen',
                 'Akuntansi',
                 'Ilmu Ekonomi',
             ],
-            'Fakultas MIPA' => [
+            'Matematika dan Ilmu Pengetahuan Alam' => [
                 'Matematika',
                 'Fisika',
                 'Kimia',
                 'Biologi',
             ],
-            'Fakultas Kedokteran Hewan' => [
-                'Pendidikan Dokter Hewan',
+            'Kedokteran Hewan' => [
+                'Kedokteran Hewan',
             ],
-            'Fakultas Teknologi Pertanian' => [
+            'Teknologi Pertanian' => [
                 'Teknologi Pangan',
                 'Teknik Pertanian',
             ],
-            'Fakultas Ilmu Sosial dan Ilmu Politik' => [
+            'Ilmu Sosial dan Ilmu Politik' => [
                 'Ilmu Komunikasi',
                 'Sosiologi',
                 'Ilmu Administrasi Negara',
                 'Hubungan Internasional',
             ],
-            'Fakultas Pariwisata' => [
+            'Pariwisata' => [
                 'Pariwisata',
                 'Industri Perjalanan Wisata',
             ],
-            'Fakultas Kelautan dan Perikanan' => [
+            'Kelautan dan Perikanan' => [
                 'Ilmu Kelautan',
                 'Manajemen Sumber Daya Perairan',
             ],

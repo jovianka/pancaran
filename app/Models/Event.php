@@ -18,7 +18,7 @@ class Event extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'event_user')->withPivot('status');
+        return $this->belongsToMany(User::class, 'event_user')->withPivot('status')->withTimestamps();
     }
 
     public function eventUsers(): HasMany
@@ -58,7 +58,7 @@ class Event extends Model
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'event_tag');
+        return $this->belongsToMany(Tag::class, 'event_tag')->withTimestamps();
     }
 
     public function parentEvent(): BelongsTo
@@ -74,5 +74,10 @@ class Event extends Model
     public function contacts(): HasMany
     {
         return $this->hasMany(ContactPerson::class);
+    }
+
+    public function registration(): HasMany
+    {
+        return $this->hasMany(EventRegistration::class);
     }
 }

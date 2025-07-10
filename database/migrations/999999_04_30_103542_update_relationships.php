@@ -45,7 +45,7 @@ return new class extends Migration
 
         Schema::table('event_role', function (Blueprint $table) {
             $table->foreignId('event_id')->references('id')->on('event');
-            $table->foreignId('detail_skp_id')->nullable()->references('id')->on('detail_skp');
+            $table->foreignId('detail_skp_id')->nullable()->references('id')->on('detail_skp')->onDelete('set null');
         });
 
         Schema::table('certificate', function (Blueprint $table) {
@@ -71,18 +71,13 @@ return new class extends Migration
             $table->foreignId('event_role_id')->references('id')->on('event_role');
         });
 
-        Schema::table('event_user', function (Blueprint $table) {
-            $table->foreignId('major_id')->references('id')->on('major');
-            $table->foreignId('faculty_id')->references('id')->on('faculty');
-        });
-
         Schema::table('event_tag', function (Blueprint $table) {
             $table->foreignId('tag_id')->references('id')->on('tag');
             $table->foreignId('event_id')->references('id')->on('event');
         });
 
         Schema::table('event', function (Blueprint $table) {
-            $table->foreignId('parent_id')->nullable()->references('id')->on('event');
+            $table->foreignId('parent_id')->nullable()->constrained('event')->nullOnDelete();
             $table->foreignId('major_id')->references('id')->on('major');
             $table->foreignId('faculty_id')->references('id')->on('faculty');
         });
