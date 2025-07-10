@@ -30,15 +30,15 @@ class EventSeeder extends Seeder
             'national',
             'international',
         ];
-        Event::factory()->count(20)->create(function() use ($scopes, $faculties, $majors){
+        Event::factory()->count(20)->create(function () use ($scopes, $faculties, $majors) {
             $scope = Arr::random($scopes);
-            $faculty = $faculties->reject(fn($faculties) => $faculties->name === 'Any')->random();
-            $major = $faculties->reject(fn($majors) => $majors->name === 'Any')->random();
+            $faculty = $faculties->reject(fn ($faculties) => $faculties->name === 'Any')->random();
+            $major = $faculties->reject(fn ($majors) => $majors->name === 'Any')->random();
 
-            return[
+            return [
                 'event_level' => $scope,
-                'faculty_id' => $scope === 'faculty' ? $faculty->id : $faculties->filter(fn($faculties) => $faculties->name === 'Any')->first()->id,
-                'major_id' => $scope === 'major' ? $major->id : $majors->filter(fn($majors) => $majors->name === 'Any')->first()->id,
+                'faculty_id' => $scope === 'faculty' ? $faculty->id : $faculties->filter(fn ($faculties) => $faculties->name === 'Any')->first()->id,
+                'major_id' => $scope === 'major' ? $major->id : $majors->filter(fn ($majors) => $majors->name === 'Any')->first()->id,
             ];
 
         });

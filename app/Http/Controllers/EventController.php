@@ -3,25 +3,49 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EditEventRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
 use App\Http\Requests\StoreEventRequest;
+use App\Models\Certificate;
+use App\Models\DetailSkp;
 use App\Models\Event;
+use App\Models\EventPermission;
 use App\Models\EventRole;
 use App\Models\EventUser;
 use App\Models\Faculty;
 use App\Models\Major;
+use App\Models\SuratTugas;
 use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Intervention\Image\Laravel\Facades\Image;
 
 class EventController extends Controller
 {
+    /**
+     * Show the create event page.
+     */
+    public function view(Request $request): Response
+    {
+        $faculties = [];
+        $majors = [];
+        $faculties = Faculty::orderBy('name')->get();
+        $majors = Major::orderBy('name')->get();
+
+        return Inertia::render('activity/CreateEvent', [
+            'status' => $request->session()->get('status'),
+            'faculties' => $faculties,
+            'majors' => $majors,
+        ]);
+    }
+
     /**
      * Show the create event page.
      */
@@ -39,14 +63,33 @@ class EventController extends Controller
         ]);
     }
 
-    public function searchTag(Request $request)
+    /**
+     * Show the edit event page.
+     */
+    public function edit(Request $request, $event_id): Response
     {
-        $eventTags = Tag::whereLike('name', $request->term.'%')
-            ->withCount('events')
-            ->orderByDesc('events_count')
-            ->paginate(5, ['*']);
-        return response($eventTags);
+        $faculties = [];
+        $majors = [];
+        $event = Event::with('suratTugas')->find($event_id);
+        if ($request->user()->type == 'student') {
+            $faculties = Faculty::where('name', '!=', 'Any')->orderBy('name')->get(['id', 'name']);
+            $majors = Major::where('name', '!=', 'Any')->orderBy('name')->get(['id', 'name', 'faculty_id']);
+        } else {
+            $faculties = Faculty::all();
+            $majors = Major::all();
+        }
+        $eventTags = $event->tags()->get();
+        $eventRoles = $event->roles()->whereNot('name', '=', 'admin')->with(['permissions', 'detailSkp'])->get();
+
+        return Inertia::render('activity/EditEvent', [
+            'faculties' => $faculties,
+            'majors' => $majors,
+            'event' => $event,
+            'eventTags' => $eventTags,
+            'eventRoles' => $eventRoles,
+        ]);
     }
+
 
     public function store(StoreEventRequest $request): RedirectResponse
     {
@@ -56,13 +99,13 @@ class EventController extends Controller
         $posterImage = Image::read($uploadedPoster)->resize(700, 875);
         $posterImageName = Str::random().'.'.$uploadedPoster->getClientOriginalExtension();
         Storage::disk('local')->put(
-            $posterImageName,
+            'event_posters/'.$posterImageName,
             $posterImage->encodeByExtension($uploadedPoster->getClientOriginalExtension(), quality: 70)
         );
 
         $uploadedJobDescription = $request->file('job_description');
         $jobDescriptionFilename = Str::random().'.'.$uploadedJobDescription->getClientOriginalExtension();
-        Storage::disk('local')->put($jobDescriptionFilename, $uploadedJobDescription->getContent());
+        Storage::disk('local')->put('job_descriptions/'.$jobDescriptionFilename, $uploadedJobDescription->getContent());
 
         $newEvent = Event::create([
             'name' => $request->name,
@@ -79,15 +122,51 @@ class EventController extends Controller
             'parent_id' => null,
         ]);
 
-        $newEventOrgRole = EventRole::create([
-            'name' => 'organisasi',
+        $newEventAdminRole = EventRole::create([
+            'name' => 'Admin',
             'quota' => 1,
-            'user_id' => $request->user()->id,
+            'certificate_schema' => null,
+            'certificate_basepdf' => null,
             'detail_skp_id' => null,
             'event_id' => $newEvent->id
         ]);
 
-        $newEvent->users()->attach($request->user()->id, ['status' => 'active', 'event_role_id' => $newEventOrgRole->id]);
+        $newEvent->users()->attach($request->user()->id, ['status' => 'active', 'event_role_id' => $newEventAdminRole->id]);
+
+        EventRole::upsert([
+            [
+                'name' => 'Ketua',
+                'quota' => 1,
+                'certificate_schema' => null,
+                'certificate_basepdf' => null,
+                'detail_skp_id' => null,
+                'event_id' => $newEvent->id
+            ],
+            [
+                'name' => 'Sekretaris',
+                'quota' => 1,
+                'certificate_schema' => null,
+                'certificate_basepdf' => null,
+                'detail_skp_id' => null,
+                'event_id' => $newEvent->id
+            ],
+            [
+                'name' => 'Bendahara',
+                'quota' => 1,
+                'certificate_schema' => null,
+                'certificate_basepdf' => null,
+                'detail_skp_id' => null,
+                'event_id' => $newEvent->id
+            ],
+            [
+                'name' => 'Peserta',
+                'quota' => 500,
+                'certificate_schema' => null,
+                'certificate_basepdf' => null,
+                'detail_skp_id' => null,
+                'event_id' => $newEvent->id
+            ],
+        ], 'name');
 
         foreach ($request->tags as $tagName) {
             $currentTag = Tag::firstOrCreate([
@@ -96,45 +175,295 @@ class EventController extends Controller
             $newEvent->tags()->attach($currentTag->id);
         }
 
-        return back();
+        return to_route('event.edit', ['id' => $newEvent->id]);
     }
 
     /**
-     * Update the user's profile information.
+     * Update event.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(EditEventRequest $request, $event_id): RedirectResponse
     {
         $validatedRequests = $request->validated();
+        $event = Event::find($event_id);
 
-        if ($request->avatar != null) {
-
-            $oldAvatar = $request->user()->avatar;
-            if ($oldAvatar != '') {
-                Storage::disk('public')->delete($oldAvatar);
+        if ($request->poster != null) {
+            $oldPoster = $event->poster;
+            if ($oldPoster != '') {
+                Storage::disk('local')->delete('event_posters/'.$oldPoster);
             }
 
-            $uploadedAvatar = $request->file('poster');
-            $avatarImage = Image::read($uploadedAvatar)->resize(700, 875);
-            $avatarImageName = Str::random().'.'.$uploadedAvatar->getClientOriginalExtension();
-            Storage::disk('public')->put(
-                $avatarImageName,
-                $avatarImage->encodeByExtension($uploadedAvatar->getClientOriginalExtension(), quality: 70)
+            $uploadedPoster = $request->file('poster');
+            $posterImage = Image::read($uploadedPoster)->resize(700, 875);
+            $posterImageName = Str::random().'.'.$uploadedPoster->getClientOriginalExtension();
+            Storage::disk('local')->put(
+                'event_posters/'.$posterImageName,
+                $posterImage->encodeByExtension($uploadedPoster->getClientOriginalExtension(), quality: 70)
             );
-            $validatedRequests['avatar'] = $avatarImageName;
+            $validatedRequests['poster'] = $posterImageName;
         } else {
-            $validatedRequests['avatar'] = $request->user()->avatar;
+            $validatedRequests['poster'] = $event->poster;
         }
 
+        if ($request->job_description != null) {
+            $oldJobDescription = $event->job_description;
+            if ($oldJobDescription != '') {
+                Storage::disk('local')->delete('job_descriptions/'.$oldJobDescription);
+            }
 
-        $request->user()->fill($validatedRequests);
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+            $uploadedJobDescription = $request->file('job_description');
+            $jobDescriptionFilename = Str::random().'.'.$uploadedJobDescription->getClientOriginalExtension();
+            Storage::disk('local')->put('job_descriptions/'.$jobDescriptionFilename, $uploadedJobDescription->getContent());
+            $validatedRequests['job_description'] = $jobDescriptionFilename;
+        } else {
+            $validatedRequests['job_description'] = $event->job_description;
         }
 
-        $request->user()->save();
+        $event->fill(Arr::except($validatedRequests, ['surat_tugas', 'tags']));
+        $event->save();
 
-        return to_route('profile.edit');
+        if ($request->surat_tugas) {
+            SuratTugas::updateOrCreate(['event_id' => $event_id,], ['nomor' => $request->surat_tugas]);
+        }
+
+        $tags = [];
+        foreach ($request->tags as $tagName) {
+            $currentTag = Tag::firstOrCreate([
+                'name' => $tagName,
+            ]);
+
+            array_push($tags, $currentTag->id);
+        }
+        $event->tags()->sync($tags);
+
+        return back();
+    }
+
+    public function getPoster(Request $request, $event_id, $filename)
+    {
+        $recordExists = Auth::user()->events()->where('event.id', $event_id)->exists();
+        if ($recordExists) {
+            $image = Storage::disk('local')->path('event_posters/'.$filename);
+            return response()->file($image);
+        } else {
+            return abort(403);
+        }
+    }
+
+    public function removePoster(Request $request, $event_id)
+    {
+        $event = Event::find($event_id);
+        $oldPoster = $event->poster;
+        if ($oldPoster != '') {
+            Storage::disk('local')->delete('event_posters/'.$oldPoster);
+        }
+        $event->update(['poster' => null]);
+
+        return back();
+    }
+
+    public function getCertificateBasePdf(Request $request, $event_id, $filename)
+    {
+        $file = Storage::disk('local')->path('certificate_template_basepdfs/'.$filename);
+        $base64 = base64_encode(file_get_contents($file));
+        $mimeType = mime_content_type($file);
+
+        $fullBase64 = 'data:'.$mimeType.';base64,'.$base64;
+        return response($fullBase64);
+    }
+
+    public function getCertificateFile(Request $request, $event_id, $filename)
+    {
+        return Storage::disk('local')->download('certificates/'.$filename);
+        // $file = Storage::disk('local')->path('certificates/'.$filename);
+        // return response()->file($file);
+    }
+
+    public function deleteCertificate(Request $request, $event_id, $certificate_id)
+    {
+        $certificate = Certificate::find($certificate_id);
+        Storage::disk('local')->delete('certificates/'.$certificate->file);
+
+        $certificate->delete();
+        return back();
+    }
+
+    public function getJobDescription(Request $request, $event_id, $filename)
+    {
+        $recordExists = Event::where('event.id', $event_id)->exists();
+        if ($recordExists) {
+            $file = Storage::disk('local')->path('job_descriptions/'.$filename);
+            return response()->file($file);
+        } else {
+            return abort(403);
+        }
+    }
+
+    public function searchTag(Request $request)
+    {
+        $eventTags = Tag::whereLike('name', $request->term.'%')
+            ->withCount('events')
+            ->orderByDesc('events_count')
+            ->paginate(5, ['*']);
+        return response($eventTags);
+    }
+
+    public function addRole(Request $request, $event_id)
+    {
+        $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'skp_id' => 'nullable|integer|exists:detail_skp,id',
+                'quota' => 'required|integer',
+                'permissions' => 'nullable|json',
+            ],
+        );
+
+        $newEventRole = EventRole::createOrFirst([
+            'name' => $request->name,
+            'event_id' => $event_id,
+            'detail_skp_id' => $request->skp_id,
+            'quota' => $request->quota,
+        ]);
+
+        $permissions = json_decode($request->permissions);
+        foreach ($permissions as $key => $value) {
+            if ($value == true) {
+                $eventPermissionId = EventPermission::where('name', '=', $key)->value('id');
+                $newEventRole->permissions()->attach($eventPermissionId);
+            }
+        }
+
+        return back();
+    }
+
+    public function updateRole(Request $request, $event_id, $role_id)
+    {
+        $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'skp_id' => 'required|integer|exists:detail_skp,id',
+                'quota' => 'required|integer',
+                'permissions' => 'nullable|json',
+            ],
+        );
+
+        $eventRole = EventRole::find($role_id);
+        $permissions = json_decode($request->permissions);
+        $permissionIds = [];
+
+        $eventRole->fill([
+            'name' => $request->name,
+            'detail_skp_id' => $request->skp_id,
+            'quota' => $request->quota,
+
+        ]);
+        $eventRole->save();
+
+        foreach ($permissions as $key => $value) {
+            if ($value == true) {
+                $eventPermissionId = EventPermission::where('name', '=', $key)->value('id');
+                array_push($permissionIds, $eventPermissionId);
+            }
+        }
+
+        $eventRole->permissions()->sync($permissionIds);
+
+        return back();
+    }
+
+    public function deleteRole(Request $request, $event_id, $role_id)
+    {
+        EventRole::find($role_id)->delete();
+        return back();
+    }
+
+    public function membersPage(Request $request, $event_id)
+    {
+        $faculties = [];
+        $majors = [];
+        $event = Event::with(['suratTugas', 'users'])->find($event_id);
+        if ($request->user()->type == 'student') {
+            $faculties = Faculty::where('name', '!=', 'Any')->orderBy('name')->get(['id', 'name']);
+            $majors = Major::where('name', '!=', 'Any')->orderBy('name')->get(['id', 'name', 'faculty_id']);
+        } else {
+            $faculties = Faculty::all();
+            $majors = Major::all();
+        }
+        $eventRoles = $event->roles()->whereNot('name', 'like', '%peserta%')->with(['permissions', 'detailSkp', 'users'])->get();
+
+        return Inertia::render('activity/Members', [
+            'faculties' => $faculties,
+            'majors' => $majors,
+            'event' => $event,
+            'eventRoles' => $eventRoles,
+        ]);
+    }
+
+    public function manageCertificatesPage(Request $request, $event_id)
+    {
+        $event = Event::with(['suratTugas'])->find($event_id);
+
+        $certificateTemplate = file_get_contents(public_path('template-sertifikat.json'));
+        $eventRoles = $event->roles()->with(['permissions', 'detailSkp', 'users'])->get();
+        $certificates = $event->certificates()->with(['user', 'role'])->get();
+
+        return Inertia::render('activity/ManageCertificates', [
+            'defaultCertificateTemplate' => $certificateTemplate,
+            'eventRoles' => $eventRoles,
+            'event' => $event,
+            'certificates' => $certificates,
+        ]);
+    }
+
+    public function saveCertificateTemplate(Request $request, $event_id, $role_id)
+    {
+        $request->validate([
+            'certificate_schema' => 'required|json',
+            'certificate_basepdf' => 'required|string'
+        ]);
+
+        $eventRole = EventRole::find($role_id);
+
+        // Remove the prefix of base64 string if present
+        if (preg_match('/^data:application\/pdf;base64,/', $request->certificate_basepdf)) {
+            $request->certificate_basepdf = substr($request->certificate_basepdf, strpos($request->certificate_basepdf, ',') + 1);
+        } else {
+            return response('Invalid basepdf input!', 400);
+        }
+
+        if ($eventRole->certificate_basepdf != null) {
+            Storage::disk('local')->delete('certificate_template_basepdfs/'.$eventRole->certificate_basepdf);
+        }
+
+        $uploadedBasePdf = base64_decode($request->certificate_basepdf);
+        $basePdfFileName = Str::random().'.pdf';
+        Storage::disk('local')->put('certificate_template_basepdfs/'.$basePdfFileName, $uploadedBasePdf);
+
+
+        $eventRole->fill([
+            'certificate_schema' => json_decode($request->certificate_schema),
+            'certificate_basepdf' => $basePdfFileName,
+        ]);
+
+        $eventRole->save();
+    }
+
+    public function generateCertificates(Request $request, $event_id, $role_id)
+    {
+        foreach ($request->certificates as $certificate) {
+            $uploadedFile = file_get_contents($certificate['file']);
+            $certificateFileName = Str::random().'.pdf';
+            Storage::disk('local')->put('certificates/'.$certificateFileName, $uploadedFile);
+
+            Certificate::create([
+                'file' => $certificateFileName,
+                'nomor_surat' => $certificate['nomor_surat'],
+                'detail_skp_id' => $certificate['detail_skp_id'],
+                'event_role_id' => $certificate['event_role_id'],
+                'event_id' => $certificate['event_id'],
+                'user_id' => $certificate['user_id'],
+            ]);
+        }
     }
 
     /**

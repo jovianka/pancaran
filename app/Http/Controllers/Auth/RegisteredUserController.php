@@ -53,7 +53,7 @@ class RegisteredUserController extends Controller
                 ]
             ],
             [
-                'faculty_id.exists' => 'faculty doesn\'t exist',
+                'faculty_id.exists' => 'Faculty doesn\'t exist',
                 'major_id.exists' => 'This major doesn\'t belong to the selected faculty'
             ]
         );

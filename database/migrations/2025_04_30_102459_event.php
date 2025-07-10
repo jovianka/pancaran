@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('job_description'); // file
             $table->string('requirements')->nullable();
             $table->enum('status', ['ongoing', 'finished']);
+            $table->index('name');
+            $table->index('description');
             $table->timestamps();
         });
     }

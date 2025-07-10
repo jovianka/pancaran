@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\DetailSkpController;
 use App\Http\Controllers\EventController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
@@ -31,6 +33,12 @@ Route::get('activity', function () {
 Route::get('explore', [ExploreController::class, 'show'])->middleware(['auth', 'verified'])->name('explore');
 
 Route::get('search-tag', [EventController::class, 'searchTag'])->middleware(['auth', 'verified'])->name('tag.search');
+Route::get('search-skp', [DetailSkpController::class, 'search'])->middleware(['auth', 'verified'])->name('skp.search');
+
+Route::get('event/{event_id}/poster/{filename}', [EventController::class, 'getPoster'])->middleware(['auth', 'verified'])->name('event.getPoster');
+Route::get('event/{event_id}/job_description/{filename}', [EventController::class, 'getJobDescription'])->middleware(['auth', 'verified'])->name('event.getJobDescription');
+Route::get('event/{event_id}/base_pdf/{filename}', [EventController::class, 'getCertificateBasePdf'])->middleware(['auth', 'verified'])->name('event.getCertificateBasePdf');
+Route::get('event/{event_id}/certificate/{filename}', [EventController::class, 'getCertificateFile'])->middleware(['auth', 'verified'])->name('event.getCertificateFile');
 
 Route::get('/explore/{id}', [EventDetailController::class, 'showDetail']);
 
