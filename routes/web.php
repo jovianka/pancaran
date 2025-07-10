@@ -22,6 +22,8 @@ Route::get('search-skp', [DetailSkpController::class, 'search'])->middleware(['a
 
 Route::get('event/{event_id}/poster/{filename}', [EventController::class, 'getPoster'])->middleware(['auth', 'verified'])->name('event.getPoster');
 Route::get('event/{event_id}/job_description/{filename}', [EventController::class, 'getJobDescription'])->middleware(['auth', 'verified'])->name('event.getJobDescription');
+Route::get('event/{event_id}/base_pdf/{filename}', [EventController::class, 'getCertificateBasePdf'])->middleware(['auth', 'verified'])->name('event.getCertificateBasePdf');
+Route::get('event/{event_id}/certificate/{filename}', [EventController::class, 'getCertificateFile'])->middleware(['auth', 'verified'])->name('event.getCertificateFile');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

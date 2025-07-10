@@ -22,6 +22,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('event/{id}/members', [EventController::class, 'membersPage'])->name('members.view');
 
+    Route::get('event/{id}/manage-certificates', [EventController::class, 'manageCertificatesPage'])->name('certificates.manage');
+    Route::post('event/{event_id}/save-certificate-template/{role_id}', [EventController::class, 'saveCertificateTemplate'])->name('certificates.saveTemplate');
+    Route::post('event/{event_id}/generate-certificates/{role_id}', [EventController::class, 'generateCertificates'])->name('certificates.generate');
+    Route::delete('event/{event_id}/delete-certificate/{certificate_id}', [EventController::class, 'deleteCertificate'])->name('certificates.delete');
+
     Route::delete('event/{id}/delete-poster', [EventController::class, 'removePoster'])->name('event.removePoster');
 
     Route::post('event/{id}/edit/add-role', [EventController::class, 'addRole'])->name('event.addRole');
