@@ -5,14 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DetailSkp extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
     protected $table = 'detail_skp';
-    
+
 
     protected $fillable = [
         'category',
