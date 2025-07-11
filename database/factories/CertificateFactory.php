@@ -19,7 +19,6 @@ class CertificateFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->words(3, true),
             'nomor_surat' => strtoupper($this->faker->bothify('SKP/###/???')),
             'file' => $this->faker->word() . '.pdf', // dummy filename
             'user_id' => User::inRandomOrder()->first()?->id ?? 1,
