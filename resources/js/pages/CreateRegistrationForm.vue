@@ -436,7 +436,7 @@ const submitForm = () => {
             })
         },
         onError: (errors) => {
-            toast.success('Formulir gagal dibuat!', {
+            toast.error('Formulir gagal dibuat!', {
                 description: 'Terdapat kesalahan dalam form',
                 duration: 4000,
             })

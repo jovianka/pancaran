@@ -30,6 +30,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import Toaster from '@/components/ui/sonner/Sonner.vue';
+import { toast } from 'vue-sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -125,7 +127,6 @@ const registrationStatus = ref<'open' | 'closed'>('open')
 const updateRegistrationStatus = (status: 'open' | 'closed') => {
     registrationStatus.value = status
     registrationDetails.status = status
-    console.log(status, registrationStatus.value)
 }
 
 // Date handling
@@ -218,20 +219,14 @@ const delete_poster = ref<boolean>(false)
 const firstEmpty = ref<Question | undefined>()
 
 watchEffect(() => {
-    console.log('event_registration_form.questions:', props.event_registration_form.questions)
-    console.log('formDetails.questions:', formDetails.questions)
     firstEmpty.value = formDetails.questions[0]
-    console.log(firstEmpty.value)
 })
 
 const checkOneQuestion = computed(() => {
     const question = firstEmpty.value
-    console.log("update nih")
     if (question?.question === '' || question?.type === ''){
-        console.log("pilihan 1 hua hua")
         return true
     }else if(['multiple_choice', 'checkbox', 'dropdown'].includes(question?.type ?? '') && question?.options?.[0] === ''){
-        console.log("pilihan 2 hue hue")
         return true
     }else return false
 })
@@ -269,8 +264,11 @@ const handleDrop = (event: DragEvent) => {
 
 const processFile = (file: File) => {
     // Validasi file (hanya image)
-    if (!file.type.startsWith('image/')) {
-        alert('Please select an image file')
+    if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+        toast.error('Kesalan upload!', {
+            description: 'Tolong unggah dokumen foto dengan format .jpeg atau .png',
+            duration: 4000,
+        })
         return
     }
 
@@ -412,16 +410,15 @@ const formatQuestionsForDatabase = (): Question[] => {
 const submitForm = () => {
     if (!validateRegistrationDetails()) return
     if (!isFormValid()) {
-        alert('Please fill in the form title and at least one valid question.')
+        toast.error('Formulir tidak lengkap!', {
+            description: 'Tolong isi judul dan minimal satu pertanyaan',
+            duration: 4000,
+        })
         return
     }
 
     const formattedQuestions = formatQuestionsForDatabase()
 
-    if (formattedQuestions.length === 0) {
-        alert('Please add at least one valid question.')
-        return
-    }
 
     const formData = new FormData()
 
@@ -444,21 +441,21 @@ const submitForm = () => {
     // Append questions sebagai JSON string
     formData.append('questions', JSON.stringify(formattedQuestions))
 
-    // Debug: lihat isi FormData
-    console.log('FormData contents:')
-    for (let [key, value] of formData.entries()) {
-        console.log(key, value)
-    }
-
     router.post(`/registration/${props.event_registration.event_id}/form/update`, formData, {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            alert('Form berhasil disimpan!')
+            toast.success('Pendaftaran berhasil diubah!', {
+                description: 'Formulir dan seluruh data terkait telah berhasil diubah.',
+                duration: 4000,
+            })
         },
         onError: (errors) => {
             console.error('Validation errors:', errors)
-            alert('Terdapat kesalahan dalam form.')
+            toast.error('Pendaftaran gagal diubah!', {
+                description: 'Terdapat kesalahan pada formulir.',
+                duration: 4000,
+            })
         }
     })
 }
@@ -469,11 +466,17 @@ const deleteForm = () =>{
     router.post(`/registration/${props.event_registration.event_id}/form/delete`, {registration_id},{
         preserveScroll: true,
         onSuccess: () => {
-            alert('Form berhasil dihapus!')
+            toast.success('Pendaftaran berhasil dihapus!', {
+                description: 'Formulir dan seluruh data terkait telah dihapus secara permanen.',
+                duration: 4000,
+            })
         },
         onError: (errors) => {
             console.error('Validation errors:', errors)
-            alert('Terdapat kesalahan pada proses penghapusan.')
+            toast.error('Pendaftaran gagal dihapus!', {
+                description: 'Terdapat kesalahan pada proses penghapusan.',
+                duration: 4000,
+            })
         }
     })
 }
@@ -483,6 +486,11 @@ const deleteForm = () =>{
 <template>
 <Head title="create registration"></Head>
 <AppLayout :breadcrumbs="breadcrumbs">
+    <Toaster
+        position="top-center"
+        :rich-colors="true"
+        :close-button="true"
+    />
     <div class="max-w-4xl mx-auto p-6 space-y-6">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Edit Registration</h1>
