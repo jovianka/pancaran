@@ -12,6 +12,14 @@ class EventRegistration extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'event_registration';
+    protected $fillable = [
+        'poster',
+        'type',
+        'status',
+        'start_date',
+        'end_date',
+        'event_id'
+    ];
 
     public function scopeVisibleToUser(Builder $query, $user, $by, $tags, $scopes, $title)
     {

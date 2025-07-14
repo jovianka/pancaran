@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('event_registration_question', function (Blueprint $table) {
             $table->id();
-            $table->string('question');
-            $table->string('type');
+            $table->string('title');
+            $table->string('description')->nullable();
+            $table->json('questions');
             $table->timestamps();
         });
     }

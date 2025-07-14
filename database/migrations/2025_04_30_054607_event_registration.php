@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('poster')->nullable();
             $table->enum('type', ['registration', 'recruitment']);
             $table->enum('status', ['open', 'closed']);
+            $table->date('start_date');
+            $table->date('end_date');
             $table->timestamps();
         });
     }
