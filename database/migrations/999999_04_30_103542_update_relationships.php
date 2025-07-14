@@ -22,19 +22,19 @@ return new class extends Migration
 
         Schema::table('event_registration_response', function (Blueprint $table) {
             $table->foreignId('user_id')->references('id')->on('users');
-            $table->foreignId('event_registration_id')->references('id')->on('event_registration');
+            $table->foreignId('event_registration_id')->references('id')->on('event_registration')->onDelete('cascade');
         });
 
         Schema::table('event_registration_question', function (Blueprint $table) {
-            $table->foreignId('event_registration_id')->references('id')->on('event_registration');
+            $table->foreignId('event_registration_id')->references('id')->on('event_registration')->onDelete('cascade');
         });
 
         Schema::table('event_registration', function (Blueprint $table) {
-            $table->foreignId('event_id')->references('id')->on('event');
+            $table->foreignId('event_id')->references('id')->on('event')->onDelete('cascade');
         });
 
         Schema::table('event_registration_role', function (Blueprint $table) {
-            $table->foreignId('event_registration_id')->references('id')->on('event_registration');
+            $table->foreignId('event_registration_id')->references('id')->on('event_registration')->onDelete('cascade');
             $table->foreignId('event_role_id')->references('id')->on('event_role');
         });
 
@@ -44,7 +44,7 @@ return new class extends Migration
         });
 
         Schema::table('event_role', function (Blueprint $table) {
-            $table->foreignId('event_id')->references('id')->on('event');
+            $table->foreignId('event_id')->references('id')->on('event')->onDelete('cascade');
             $table->foreignId('detail_skp_id')->nullable()->references('id')->on('detail_skp')->onDelete('set null');
         });
 

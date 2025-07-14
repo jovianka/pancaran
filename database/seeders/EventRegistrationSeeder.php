@@ -31,6 +31,8 @@ class EventRegistrationSeeder extends Seeder
                     'poster'=>'https://images.unsplash.com/photo-1584448141569-69f342da535c',
                     'type' => 'recruitment',
                     'status' => Arr::random($status),
+                    'start_date' => today()->format('Y-m-d'),
+                    'end_date' => today()->addDay()->format('Y-m-d')
                 ]);
             }
 
@@ -40,6 +42,8 @@ class EventRegistrationSeeder extends Seeder
                     'poster'=>'https://images.unsplash.com/photo-1584448141569-69f342da535c',
                     'type' => 'registration',
                     'status' => Arr::random($status),
+                    'start_date' => today()->format('Y-m-d'),
+                    'end_date' => today()->addDay()->format('Y-m-d')
                 ]);
             }
         }
