@@ -33,7 +33,8 @@ class EventDetailController extends Controller
         ];
 
         return Inertia::render('EventDetail', [
-            'info' => $info
+            'info' => $info,
+            'event' => $event,
         ]);
     }
 }

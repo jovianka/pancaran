@@ -30,7 +30,7 @@ class ActivityController extends Controller
             );
         }
 
-        $activities = $activities->paginate(3, ['*'])->withQueryString();
+        $activities = $activities->paginate(10, ['*'])->withQueryString();
 
         return Inertia::render('activity/Activity', [
             'faculties' => $faculties,

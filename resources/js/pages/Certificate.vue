@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import CertificateCard from '@/components/CertificateCard.vue';
+import SearchBox from '@/components/SearchBoxCertificate.vue';
+import skpTotal from '@/components/skpTotal.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import CertificateCard from '@/components/CertificateCard.vue';
-import SearchBox from '@/components/SearchBoxCertificate.vue';
-import { ref, computed } from 'vue'
-import skpTotal from '@/components/skpTotal.vue';
+import { computed, ref } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -15,72 +15,60 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 interface CertificateType {
-  id: number; // ✅ Tambahkan ini
-  file?: string;
-  event?: {
-    name?: string;
-    eventUsers?: {
-      role?: {
+    id: number;
+    file?: string;
+    event?: {
+        id: number;
         name?: string;
-      };
-      user?: {
-        name?: string;
-      };
-    }[];
-  };
-  detailSkp?: {
-    skp?: number;
-  };
+        eventUsers?: {
+            role?: {
+                name?: string;
+            };
+            user?: {
+                name?: string;
+            };
+        }[];
+    };
+    detailSkp?: {
+        skp?: number;
+    };
 }
 
-
-
 const props = defineProps<{
-  certificates: CertificateType[];
-}>()
+    certificates: CertificateType[];
+}>();
 
-const search = ref('')
+const search = ref('');
 
-// 🔍 Filter berdasarkan judul event atau penyelenggara
 const filteredCertificates = computed(() => {
-  if (!search.value) return props.certificates;
+    if (!search.value) return props.certificates;
 
-  const keyword = search.value.toLowerCase();
+    const keyword = search.value.toLowerCase();
 
-  return props.certificates.filter(c => {
-    const eventName = c.event?.name?.toLowerCase() ?? '';
+    return props.certificates.filter((c) => {
+        const eventName = c.event?.name?.toLowerCase() ?? '';
 
-    // ✅ Gunakan eventUsers, bukan event_users
-    const adminName = c.event?.eventUsers?.find(
-      eu => eu.role?.name === 'admin'
-    )?.user?.name?.toLowerCase() ?? '';
+        const adminName = c.event?.eventUsers?.find((eu) => eu.role?.name === 'admin')?.user?.name?.toLowerCase() ?? '';
 
-    return eventName.includes(keyword) || adminName.includes(keyword);
-  });
+        return eventName.includes(keyword) || adminName.includes(keyword);
+    });
 });
-
 </script>
 
 <template>
     <Head title="Certificate" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="px-4 sm:px-8 pt-6">
+        <div class="px-4 pt-6 sm:px-8">
             <h2 class="text-xl font-semibold tracking-tight">Certificate</h2>
         </div>
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center w-full gap-4 mb-4 pr-4">
+        <div class="mb-4 flex w-full flex-col gap-4 pr-4 md:flex-row md:items-center md:justify-between">
             <SearchBox v-model="search" />
-            <skpTotal :certificate="filteredCertificates"/>
-        </div>
-        
-        <!-- Certificate Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 px-4 sm:px-8 py-6">
-            <CertificateCard
-                v-for="(certificate, index) in filteredCertificates"
-                :key="index"
-                :certificate="certificate"
-            />
+            <skpTotal :certificate="filteredCertificates" />
         </div>
 
-        
+        <!-- Certificate Grid -->
+        <div class="grid grid-cols-1 gap-6 px-4 py-6 sm:grid-cols-2 sm:px-8 md:grid-cols-3 xl:grid-cols-4">
+            <CertificateCard v-for="(certificate, index) in filteredCertificates" :key="index" :certificate="certificate" />
+        </div>
     </AppLayout>
 </template>

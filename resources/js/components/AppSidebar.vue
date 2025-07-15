@@ -4,54 +4,68 @@ import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, CalendarClock, CompassIcon, FileBadge, Folder, User as UserIcon } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { AwardIcon, BookOpen, CalendarClock, CompassIcon, FileBadge, Folder, MailIcon, User as UserIcon } from 'lucide-vue-next';
+import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
-import { computed } from 'vue'
-import { usePage } from '@inertiajs/vue3'
 
-const page = usePage() as { props: { auth?: { user?: { type: string } } } }
-const userType = computed(() => page.props.auth?.user?.type)
+const page = usePage() as { props: { auth?: { user?: { type: string } } } };
+const userType = computed(() => page.props.auth?.user?.type);
 
 const mainNavItems = computed<NavItem[]>(() => {
-  const items: NavItem[] = [
-    {
-      title: 'Explore',
-      href: '/explore',
-      icon: CompassIcon,
-    },
-    {
-      title: 'Dashboard',
-      href: '/dashboard',
-      icon: UserIcon,
-    },
-    {
-        title: 'Activity',
-        href: '/activity',
-        icon: CalendarClock,
-        children: [
-            { title: 'Your Activity', href: '/activity' },
-            { title: 'Create an Event', href: '/event/create' },
-        ],
-    },
-  ]
+    const items: NavItem[] = [
+        {
+            title: 'Explore',
+            href: '/explore',
+            icon: CompassIcon,
+        },
+        {
+            title: 'Dashboard',
+            href: '/dashboard',
+            icon: UserIcon,
+        },
+        {
+            title: 'Database SKP',
+            href: '/database-skp',
+            icon: AwardIcon,
+        },
+    ];
 
-  if (userType.value === 'student') {
-    items.push({
-      title: 'Certificate',
-      href: '/certificate',
-      icon: FileBadge,
-    })
-  }
+    if (userType.value === 'student') {
+        items.push({
+            title: 'Certificate',
+            href: '/certificate',
+            icon: FileBadge,
+        });
+        items.push({
+            title: 'Invitations',
+            href: '/invitations',
+            icon: MailIcon,
+        });
+        items.push({
+            title: 'Activity',
+            href: '/activity',
+            icon: CalendarClock,
+        });
+    } else {
+        items.push({
+            title: 'Activity',
+            href: '/activity',
+            icon: CalendarClock,
+            children: [
+                { title: 'Your Activity', href: '/activity' },
+                { title: 'Create an Event', href: '/event/create' },
+            ],
+        });
+    }
 
-  return items
-})
-
+    return items;
+});
 
 const footerNavItems: NavItem[] = [
     {
         title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
+        href: 'https://github.com/jovianka/pancaran',
         icon: Folder,
     },
     {
@@ -60,8 +74,6 @@ const footerNavItems: NavItem[] = [
         icon: BookOpen,
     },
 ];
-
-
 </script>
 
 <template>

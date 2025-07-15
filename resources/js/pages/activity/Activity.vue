@@ -13,7 +13,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import DefaultPageLayout from '@/layouts/DefaultPageLayout.vue';
 import { cn } from '@/lib/utils';
 import { useDebounceFn, useFetch } from '@vueuse/core';
-import { Award, Check, ChevronLeftIcon, ChevronRightIcon, Eye, PlusIcon, ScanEye, Search, UserPen, Users } from 'lucide-vue-next';
+import { Award, Check, ChevronLeftIcon, ChevronRightIcon, Eye, PencilIcon, PlusIcon, ScanEye, Search, UserPen } from 'lucide-vue-next';
 import { PaginationEllipsis, PaginationList, PaginationListItem, PaginationNext, PaginationPrev, PaginationRoot, useFilter } from 'reka-ui';
 import { onMounted, ref } from 'vue';
 
@@ -186,7 +186,7 @@ onMounted(() => {
                     class="group/card relative w-auto gap-0 rounded-md p-0 transition-all duration-300 hover:scale-105 focus:scale-105"
                 >
                     <CardHeader class="w-full gap-0 p-0">
-                        <Link href="">
+                        <Link :href="route('activity.detail', { id: event.id })">
                             <img
                                 :src="
                                     event.poster
@@ -200,9 +200,11 @@ onMounted(() => {
                         <Dialog>
                             <DialogTrigger as-child>
                                 <button
-                                    class="group/view-poster-icon bg-background/70 hover:bg-foreground/50 absolute top-2 right-2 cursor-pointer rounded-xl p-1.5 transition-all duration-300"
+                                    class="group/view-poster-icon bg-foreground/70 hover:bg-background/50 absolute top-2 right-2 cursor-pointer rounded-xl p-1.5 transition-all duration-300"
                                 >
-                                    <ScanEye class="size-5 text-white transition-all duration-300 group-hover/view-poster-icon:text-black" />
+                                    <ScanEye
+                                        class="text-background group-hover/view-poster-icon:text-foreground size-5 transition-all duration-300"
+                                    />
                                 </button>
                             </DialogTrigger>
                             <DialogContent class="overflow-hidden rounded-md p-0" :show-close-button="false">
@@ -227,36 +229,40 @@ onMounted(() => {
                         <div class="bg-background z-20 flex w-full flex-row justify-end gap-3 rounded-b-md px-4 py-3 text-left">
                             <Tooltip :delay-duration="200">
                                 <TooltipTrigger as-child>
-                                    <Link href="" class="hover:bg-foreground/60 block size-fit rounded-full bg-white p-2 transition-all duration-300"
-                                        ><Award class="size-4 text-black"
+                                    <Link
+                                        :href="route('certificates.manage', { id: event.id })"
+                                        class="hover:bg-foreground/60 bg-foreground block size-fit rounded-full p-2 transition-all duration-300"
+                                        ><Award class="text-background size-4"
                                     /></Link>
                                 </TooltipTrigger>
                                 <TooltipContent>Manage Certificates</TooltipContent>
                             </Tooltip>
                             <Tooltip :delay-duration="200">
                                 <TooltipTrigger as-child>
-                                    <Link :href="route('members.view', {id: event.id})" class="hover:bg-foreground/60 block size-fit rounded-full bg-white p-2 transition-all duration-300"
-                                        ><UserPen class="size-4 text-black"
+                                    <Link
+                                        :href="route('members.view', { id: event.id })"
+                                        class="hover:bg-foreground/60 bg-foreground block size-fit rounded-full p-2 transition-all duration-300"
+                                        ><UserPen class="text-background size-4"
                                     /></Link>
                                 </TooltipTrigger>
-                                <TooltipContent>Manage Committee</TooltipContent>
+                                <TooltipContent>Manage Members</TooltipContent>
                             </Tooltip>
                             <Tooltip :delay-duration="200">
                                 <TooltipTrigger as-child>
                                     <Link
-                                        href=""
-                                        class="bg-foreground hover:bg-foreground/60 block size-fit rounded-full p-2 transition-all duration-300"
-                                        ><Users class="size-4 text-black"
+                                        :href="route('event.edit', { id: event.id })"
+                                        class="hover:bg-foreground/60 bg-foreground block size-fit rounded-full p-2 transition-all duration-300"
+                                        ><PencilIcon class="text-background size-4"
                                     /></Link>
                                 </TooltipTrigger>
-                                <TooltipContent>Manage Participants</TooltipContent>
+                                <TooltipContent>Edit Event</TooltipContent>
                             </Tooltip>
                             <Tooltip :delay-duration="200">
                                 <TooltipTrigger as-child>
                                     <Link
-                                        href=""
+                                        :href="route('activity.detail', { id: event.id })"
                                         class="bg-foreground hover:bg-foreground/60 block size-fit rounded-full p-2 transition-all duration-300"
-                                        ><Eye class="size-4 text-black"
+                                        ><Eye class="text-background size-4"
                                     /></Link>
                                 </TooltipTrigger>
                                 <TooltipContent>Event Details</TooltipContent>

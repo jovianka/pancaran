@@ -13,15 +13,16 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
 import DefaultPageLayout from '@/layouts/DefaultPageLayout.vue';
+import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import type { Font } from '@pdfme/common';
 import { generate } from '@pdfme/generator';
 import { barcodes, image, text } from '@pdfme/schemas';
 import { Designer } from '@pdfme/ui';
-import { useFetch } from '@vueuse/core';
+import { useBase64, useFetch } from '@vueuse/core';
 import { ChevronsUpDownIcon, EllipsisIcon, XIcon } from 'lucide-vue-next';
-import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
+import { computed, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -127,6 +128,17 @@ const generateCertificates = () => {
     });
 };
 
+const fileInput = shallowRef<File>();
+const { base64: fileBase64 } = useBase64(fileInput);
+
+watch(fileBase64, (newBase64) => {
+    if (newBase64) {
+        const currentTemplate = pdfDesignerInstance.getTemplate();
+        currentTemplate.basePdf = newBase64;
+        pdfDesignerInstance.updateTemplate(currentTemplate);
+    }
+});
+
 onMounted(() => {
     if (pdfDesignerElement.value) {
         pdfDesignerInstance = new Designer({
@@ -166,8 +178,8 @@ watch(selectedRole, async () => {
         <DefaultPageLayout>
             <Heading title="Manage Certificates" description="Create Templates and Generate Certificate PDFs for each role" />
 
+            <h3 class="mb-3 font-bold">Create Template</h3>
             <div class="mb-3 flex flex-row items-center gap-3">
-                <h3 class="font-bold">Create Template</h3>
                 <DropdownMenu>
                     <Button variant="secondary" as-child>
                         <DropdownMenuTrigger class="uppercase hover:cursor-pointer">
@@ -184,6 +196,19 @@ watch(selectedRole, async () => {
                     </DropdownMenuContent>
                 </DropdownMenu>
                 <Input type="text" v-model="nomorSuratInput" class="max-w-sm" placeholder="Nomor Surat" />
+                <!-- @vue-ignore copying styles from the component because the component's broken for some reason. Couldn't reset its value -->
+                <input
+                    type="file"
+                    accept="application/pdf"
+                    @input="(ev) => (fileInput = ev.target.files[0])"
+                    :class="
+                        cn(
+                            'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+                            'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+                            'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+                        )
+                    "
+                />
                 <Button variant="default" @click="pdfDesignerInstance?.saveTemplate()">Save Template</Button>
                 <Button variant="default" @click="generateCertificates">Generate & Send Certificates</Button>
             </div>
@@ -211,12 +236,7 @@ watch(selectedRole, async () => {
                         <TableCell>{{ certificate.nomor_surat }}</TableCell>
                         <TableCell>{{ certificate.role.name.toUpperCase() }}</TableCell>
                         <TableCell>
-                            <a
-                                :href="route('event.getCertificateFile', { event_id: props.event.id, filename: certificate.file })"
-                                target="_blank"
-                                rel="noopener"
-                                as-child
-                            >
+                            <a :href="route('event.downloadCertificateFile', { filename: certificate.file })" target="_blank" rel="noopener" as-child>
                                 <Button variant="link" class="p-0 text-blue-200">Download File</Button>
                             </a>
                         </TableCell>

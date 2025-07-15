@@ -3,11 +3,6 @@
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('activity', [ActivityController::class, 'view'])->name('activity');
@@ -21,6 +16,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('event/{id}/edit', [EventController::class, 'update'])->name('event.update');
 
     Route::get('event/{id}/members', [EventController::class, 'membersPage'])->name('members.view');
+    Route::post('event/members/invitation', [EventController::class, 'sendInvitation'])->name('members.sendInvitation');
+    Route::patch('event/members/invitation/{id}', [EventController::class, 'updateInvitation'])->name('members.updateInvitation');
+    Route::delete('event/members/invitation/{id}', [EventController::class, 'deleteInvitation'])->name('members.deleteInvitation');
 
     Route::get('event/{id}/manage-certificates', [EventController::class, 'manageCertificatesPage'])->name('certificates.manage');
     Route::post('event/{event_id}/save-certificate-template/{role_id}', [EventController::class, 'saveCertificateTemplate'])->name('certificates.saveTemplate');

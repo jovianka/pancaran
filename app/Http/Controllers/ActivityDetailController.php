@@ -14,18 +14,11 @@ class ActivityDetailController extends Controller
     {
         // $user = Auth::user();
 
-        // $registration = EventRegistrationResponse::where('event_id', $id)
-        //     ->where('user_id', $user->id)
-        //     ->firstOrFail();
-
         $event = Event::with('roles')->findOrFail($id);
-
-        $registration = EventRegistration::where('event_id', $id)->firstOrFail();
 
         $info = [
             'title' => $event->name,
-            'type' => $registration->type,
-            'poster' => $registration->poster,
+            'poster' => $event->poster,
             'eventStart' => $event->start_date,
             'eventEnd' => $event->end_date,
             'subCommittees' => $event->roles()->whereNotIn('name', ['peserta', 'anggota'])->pluck('name')->toArray(),
@@ -37,6 +30,7 @@ class ActivityDetailController extends Controller
 
         return Inertia::render('ActivityDetail', [
             'info' => $info,
+            'event' => $event,
         ]);
     }
 

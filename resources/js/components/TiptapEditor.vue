@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Placeholder as ttPlaceholder } from '@tiptap/extension-placeholder';
 import { Subscript as ttSubscript } from '@tiptap/extension-subscript';
 import { Superscript as ttSuperScript } from '@tiptap/extension-superscript';
 import { TaskItem as ttTaskItem } from '@tiptap/extension-task-item';
@@ -7,7 +8,6 @@ import { TaskList as ttTaskList } from '@tiptap/extension-task-list';
 import { TextAlign as ttTextAlign } from '@tiptap/extension-text-align';
 import { Typography as ttTypography } from '@tiptap/extension-typography';
 import { Underline as ttUnderline } from '@tiptap/extension-underline';
-import { Placeholder as ttPlaceholder } from '@tiptap/extension-placeholder';
 import { StarterKit } from '@tiptap/starter-kit';
 import { Content, EditorContent, useEditor } from '@tiptap/vue-3';
 import {
@@ -30,10 +30,18 @@ import {
 import Button from './ui/button/Button.vue';
 import Toggle from './ui/toggle/Toggle.vue';
 
+interface Props {
+    editable?: boolean;
+}
+
 const model = defineModel();
+const props = withDefaults(defineProps<Props>(), {
+    editable: true,
+});
 
 const tiptapEditor = useEditor({
     content: model.value as Content,
+    editable: props.editable,
     extensions: [
         StarterKit,
         ttUnderline,
@@ -49,7 +57,7 @@ const tiptapEditor = useEditor({
         }),
         ttTypography,
         ttPlaceholder.configure({
-            placeholder: 'Write something'
+            placeholder: 'Write something',
         }),
     ],
     editorProps: {
@@ -61,7 +69,6 @@ const tiptapEditor = useEditor({
         model.value = editor.getJSON();
     },
 });
-
 </script>
 
 <template>

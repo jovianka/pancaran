@@ -1,28 +1,25 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EditEventRequest;
-use App\Http\Requests\Settings\ProfileUpdateRequest;
 use App\Http\Requests\StoreEventRequest;
 use App\Models\Certificate;
-use App\Models\DetailSkp;
 use App\Models\Event;
 use App\Models\EventPermission;
 use App\Models\EventRole;
-use App\Models\EventUser;
 use App\Models\Faculty;
+use App\Models\Invitation;
 use App\Models\Major;
 use App\Models\SuratTugas;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Intervention\Image\Laravel\Facades\Image;
@@ -95,30 +92,35 @@ class EventController extends Controller
     {
         $validatedRequest = $request->validated();
 
-        $uploadedPoster = $request->file('poster');
-        $posterImage = Image::read($uploadedPoster)->resize(700, 875);
-        $posterImageName = Str::random().'.'.$uploadedPoster->getClientOriginalExtension();
-        Storage::disk('local')->put(
-            'event_posters/'.$posterImageName,
-            $posterImage->encodeByExtension($uploadedPoster->getClientOriginalExtension(), quality: 70)
-        );
+        if ($request->poster != null) {
+            $uploadedPoster = $request->file('poster');
+            $posterImage = Image::read($uploadedPoster)->resize(700, 875);
+            $posterImageName = Str::random().'.'.$uploadedPoster->getClientOriginalExtension();
+            Storage::disk('local')->put(
+                'event_posters/'.$posterImageName,
+                $posterImage->encodeByExtension($uploadedPoster->getClientOriginalExtension(), quality: 70)
+            );
+            $validatedRequest['poster'] = $posterImageName;
+        } else {
+            $validatedRequest['poster'] = null;
+        }
 
         $uploadedJobDescription = $request->file('job_description');
         $jobDescriptionFilename = Str::random().'.'.$uploadedJobDescription->getClientOriginalExtension();
         Storage::disk('local')->put('job_descriptions/'.$jobDescriptionFilename, $uploadedJobDescription->getContent());
 
         $newEvent = Event::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'event_level' => $request->event_level,
-            'poster' => $posterImageName,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
+            'name' => $validatedRequest['name'],
+            'description' => $validatedRequest['description'],
+            'event_level' => $validatedRequest['event_level'],
+            'poster' => $validatedRequest['poster'],
+            'start_date' => $validatedRequest['start_date'],
+            'end_date' => $validatedRequest['end_date'],
             'job_description' => $jobDescriptionFilename,
-            'requirements' => json_encode($request->requirements),
+            'requirements' => $validatedRequest['requirements'],
             'status' => 'ongoing',
-            'faculty_id' => $request->faculty_id,
-            'major_id' => $request->major_id,
+            'faculty_id' => $validatedRequest['faculty_id'],
+            'major_id' => $validatedRequest['major_id'],
             'parent_id' => null,
         ]);
 
@@ -166,7 +168,7 @@ class EventController extends Controller
                 'detail_skp_id' => null,
                 'event_id' => $newEvent->id
             ],
-        ], 'name');
+        ], 'id');
 
         foreach ($request->tags as $tagName) {
             $currentTag = Tag::firstOrCreate([
@@ -271,11 +273,20 @@ class EventController extends Controller
         return response($fullBase64);
     }
 
-    public function getCertificateFile(Request $request, $event_id, $filename)
+    public function downloadCertificateFile(Request $request, $filename)
     {
         return Storage::disk('local')->download('certificates/'.$filename);
         // $file = Storage::disk('local')->path('certificates/'.$filename);
         // return response()->file($file);
+    }
+
+    public function getCertificateFile(Request $request, $filename)
+    {
+        $file = Storage::disk('local')->path('certificates/'.$filename);
+
+        return response()->file($file, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     public function deleteCertificate(Request $request, $event_id, $certificate_id)
@@ -285,6 +296,16 @@ class EventController extends Controller
 
         $certificate->delete();
         return back();
+    }
+
+    public function downloadJobDescription(Request $request, $event_id, $filename)
+    {
+        $recordExists = Event::where('event.id', $event_id)->exists();
+        if ($recordExists) {
+            return Storage::disk('local')->download('job_descriptions/'.$filename);
+        } else {
+            return abort(403);
+        }
     }
 
     public function getJobDescription(Request $request, $event_id, $filename)
@@ -377,27 +398,6 @@ class EventController extends Controller
         return back();
     }
 
-    public function membersPage(Request $request, $event_id)
-    {
-        $faculties = [];
-        $majors = [];
-        $event = Event::with(['suratTugas', 'users'])->find($event_id);
-        if ($request->user()->type == 'student') {
-            $faculties = Faculty::where('name', '!=', 'Any')->orderBy('name')->get(['id', 'name']);
-            $majors = Major::where('name', '!=', 'Any')->orderBy('name')->get(['id', 'name', 'faculty_id']);
-        } else {
-            $faculties = Faculty::all();
-            $majors = Major::all();
-        }
-        $eventRoles = $event->roles()->whereNot('name', 'like', '%peserta%')->with(['permissions', 'detailSkp', 'users'])->get();
-
-        return Inertia::render('activity/Members', [
-            'faculties' => $faculties,
-            'majors' => $majors,
-            'event' => $event,
-            'eventRoles' => $eventRoles,
-        ]);
-    }
 
     public function manageCertificatesPage(Request $request, $event_id)
     {
@@ -466,24 +466,98 @@ class EventController extends Controller
         }
     }
 
+    public function membersPage(Request $request, $event_id)
+    {
+        $faculties = [];
+        $majors = [];
+        $event = Event::with(['suratTugas'])->find($event_id);
+        $faculties = Faculty::all();
+        $majors = Major::all();
+        $eventUsers = $event->users();
+        $eventRoles = $event->roles()->whereNot('name', 'like', '%peserta%')->with(['permissions', 'detailSkp'])->get();
+        $invitations = Invitation::where('event_id', '=', $event_id)->with(['role', 'recipient'])->get();
+
+        if ($request->query('role_filter')) {
+            $eventUsers = $eventUsers->where('event_role_id', $request->query('role_filter'));
+        }
+
+        $eventUsers = $eventUsers->paginate(25)->withQueryString();
+
+        return Inertia::render('activity/Members', [
+            'faculties' => $faculties,
+            'majors' => $majors,
+            'event' => $event,
+            'roleFilter' => $request->query('role_filter'),
+            'eventUsers' => $eventUsers,
+            'eventRoles' => $eventRoles,
+            'invitations' => $invitations,
+        ]);
+    }
+
+    public function sendInvitation(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string',
+            'body_message' => 'required|string',
+            'role_id' => 'required|integer|exists:event_role,id',
+            'event_id' => 'required|integer|exists:event,id',
+            'recipient_nim' => 'required|string|exists:users,nim',
+        ]);
+
+        $recipient_id = User::where('nim', '=', $request->recipient_nim)->value('id');
+
+        Invitation::firstOrCreate([
+            'title' => $request->title,
+            'body' => $request->body_message,
+            'status' => 'pending',
+            'event_id' => $request->event_id,
+            'event_role_id' => $request->role_id,
+            'recipient_id' => $recipient_id,
+        ]);
+
+        return back();
+    }
+
+    public function updateInvitation(Request $request, $id)
+    {
+        $validatedRequests = $request->validate([
+            'title' => 'nullable|string',
+            'body_message' => 'nullable|string',
+            'role_id' => 'nullable|integer|exists:event_role,id',
+            'recipient_nim' => 'nullable|string|exists:users,nim',
+        ]);
+
+        $invitation = Invitation::find($id);
+
+        $recipient_id = User::where('nim', '=', $request->recipient_nim)->value('id');
+        $validatedRequests['recipient_id'] = $recipient_id;
+        $validatedRequests['event_role_id'] = $validatedRequests['role_id'];
+        $validatedRequests['body'] = $validatedRequests['body_message'];
+
+        $invitation->fill(Arr::except($validatedRequests, ['recipient_nim', 'invitation_id', 'role_id', 'body_message']));
+        $invitation->save();
+
+        return back();
+    }
+
+    public function deleteInvitation(Request $request, $id)
+    {
+        $invitation = Invitation::find($id);
+        $invitation->delete();
+
+        return back();
+    }
+
     /**
      * Delete an event
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, $id): RedirectResponse
     {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+        $event = Event::find($id);
 
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+        if ($event) {
+            $event->deleteOrFail();
+        }
+        return redirect('activity');
     }
 }

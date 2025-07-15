@@ -22,7 +22,7 @@ class EventFactory extends Factory
             'name' => fake()->sentence(2),
             'description' => fake()->paragraph(4),
             'poster' => null,
-            'requirements' => fake()->paragraph(2),
+            'requirements' => null,
             'start_date' => fake()->dateTimeBetween('-1 month', 'now'),
             'end_date' => fake()->dateTimeBetween('now', '+1 month'),
             'job_description' => '',
