@@ -12,7 +12,7 @@ class Invitation extends Model
 
     public function role(): BelongsTo
     {
-        return $this->belongsTo(EventRole::class);
+        return $this->belongsTo(EventRole::class, 'event_role_id');
     }
 
     public function recipient(): BelongsTo

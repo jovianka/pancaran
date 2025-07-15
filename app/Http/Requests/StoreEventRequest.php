@@ -35,7 +35,7 @@ class StoreEventRequest extends FormRequest
         }
 
         return [
-            'poster' => 'required|file|image',
+            'poster' => 'nullable|file|image',
             'name' => 'required|string|max:255',
             'description' => 'required|string|max:1000',
             'event_level' => 'required|string|in:international,regional,national,university,faculty,major',

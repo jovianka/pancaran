@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Placeholder as ttPlaceholder } from '@tiptap/extension-placeholder';
 import { Subscript as ttSubscript } from '@tiptap/extension-subscript';
 import { Superscript as ttSuperScript } from '@tiptap/extension-superscript';
 import { TaskItem as ttTaskItem } from '@tiptap/extension-task-item';
@@ -8,7 +9,7 @@ import { TextAlign as ttTextAlign } from '@tiptap/extension-text-align';
 import { Typography as ttTypography } from '@tiptap/extension-typography';
 import { Underline as ttUnderline } from '@tiptap/extension-underline';
 import { StarterKit } from '@tiptap/starter-kit';
-import { EditorContent, useEditor } from '@tiptap/vue-3';
+import { Content, EditorContent, useEditor } from '@tiptap/vue-3';
 import {
     AlignCenter,
     AlignJustify,
@@ -26,16 +27,21 @@ import {
     TextQuote,
     Underline,
 } from 'lucide-vue-next';
-import { onMounted } from 'vue';
 import Button from './ui/button/Button.vue';
 import Toggle from './ui/toggle/Toggle.vue';
 
-const props = defineProps(['placeholder'])
+interface Props {
+    editable?: boolean;
+}
+
 const model = defineModel();
-const placeholderContent = props.placeholder ?? "<p>I'm running Tiptap with Vue.js. 🎉</p>"
+const props = withDefaults(defineProps<Props>(), {
+    editable: true,
+});
 
 const tiptapEditor = useEditor({
-    content: placeholderContent,
+    content: model.value as Content,
+    editable: props.editable,
     extensions: [
         StarterKit,
         ttUnderline,
@@ -50,6 +56,9 @@ const tiptapEditor = useEditor({
             alignments: ['left', 'center', 'right', 'justify'],
         }),
         ttTypography,
+        ttPlaceholder.configure({
+            placeholder: 'Write something',
+        }),
     ],
     editorProps: {
         attributes: {
@@ -59,10 +68,6 @@ const tiptapEditor = useEditor({
     onUpdate: ({ editor }) => {
         model.value = editor.getJSON();
     },
-});
-
-onMounted(() => {
-    model.value = tiptapEditor.value?.getJSON();
 });
 </script>
 
