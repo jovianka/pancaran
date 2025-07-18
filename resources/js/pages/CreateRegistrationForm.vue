@@ -448,7 +448,7 @@ const submitForm = () => {
 </script>
 
 <template>
-<Head title="create registration"></Head>
+<Head title="Create Registration"></Head>
 <AppLayout :breadcrumbs="breadcrumbs">
     <Toaster
         position="top-center"
@@ -457,8 +457,8 @@ const submitForm = () => {
     />
     <div class="max-w-4xl mx-auto p-6 space-y-6">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Create Registration</h1>
-            <p class="text-gray-600">Create and customize your registration form</p>
+            <h1 class="text-3xl font-bold text-foreground mb-2">Create Registration</h1>
+            <p class="text-muted-foreground">Create and customize your registration form</p>
         </div>
 
         <!-- Enrollemnt Details -->
@@ -494,34 +494,34 @@ const submitForm = () => {
                     <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-all duration-200"
                         :class="{ 'border-blue-400 bg-blue-50': isDragOver }" @dragover.prevent="isDragOver = true"
                         @dragleave.prevent="isDragOver = false" @drop.prevent="handleDrop">
-                        <Upload class="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                        <Upload class="w-12 h-12 mx-auto text-muted-foreground/uploaded mb-4" />
                         <div class="space-y-2">
-                            <p class="text-sm font-medium text-gray-700">
+                            <p class="text-sm font-medium text-muted-foreground">
                                 <label for="poster-upload"
                                     class="text-blue-600 hover:text-blue-500 cursor-pointer underline">
                                     Click to upload
                                 </label>
                                 or drag and drop
                             </p>
-                            <p class="text-xs text-gray-500">PNG, JPG</p>
+                            <p class="text-xs text-muted-foreground">PNG, JPG</p>
                         </div>
                         <input id="poster-upload" type="file" accept=".jpg,.jpeg,.png" class="hidden"
                             @change="handlePosterUpload" />
                     </div>
 
                     <div v-if="registrationDetails.poster" class="space-y-3">
-                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg w-full">
+                        <div class="flex items-center justify-between p-3 bg-muted rounded-lg w-full">
                             <div class="flex items-center gap-3 w-full w-min-0">
                                 <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                                     <Image class="w-5 h-5 text-blue-600" />
                                 </div>
                                 <div class="w-full min-w-0">
-                                    <p class="text-sm font-medium text-gray-900 truncate">{{
+                                    <p class="text-sm font-medium text-foreground truncate">{{
                                         registrationDetails.poster?.name }}</p>
-                                    <p class="text-xs text-gray-500">{{ registrationDetails.poster ?
+                                    <p class="text-xs text-muted-foreground">{{ registrationDetails.poster ?
                                         Math.round(registrationDetails.poster.size / 1024) : 0 }} KB</p>
                                 </div>
-                                <Badge variant="secondary" class="bg-green-100 text-green-700">
+                                <Badge variant="secondary" class="bg-background text-green-600">
                                     <CheckCircle class="w-3 h-3 mr-1" />
                                     Uploaded
                                 </Badge>
@@ -544,8 +544,8 @@ const submitForm = () => {
                                 <div class="flex items-center justify-between">
                                     <div class="space-y-1">
                                         <Label class="text-base font-medium">Registration Status</Label>
-                                        <p class="text-sm text-gray-500">
-                                            {{ registrationDetails.status === 'closed' ? 'Manually closed' : 'Open basedon dates' }}
+                                        <p class="text-sm text-muted-foreground">
+                                            {{ registrationDetails.status === 'closed' ? 'Manually closed' : 'Open based on dates' }}
                                         </p>
                                     </div>
                                     <div class="flex items-center gap-3">
@@ -729,8 +729,8 @@ const submitForm = () => {
                         </div>
 
                         <!-- Question Preview -->
-                        <div class="mb-4 p-3 bg-gray-50 rounded-lg">
-                            <p class="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                        <div class="mb-4 p-3 bg-background rounded-lg">
+                            <p class="text-sm font-medium text-muted-foreground mb-2">Preview:</p>
                             <div v-if="question.question && question.type">
                                 <Label class="text-base font-medium mb-2 block">
                                     {{ question.question }}
@@ -748,7 +748,7 @@ const submitForm = () => {
                                 </div>
 
                                 <!-- Multiple Choice -->
-                                <div v-if="question.type === 'multiple_choice' && question.options">
+                                <div v-if="question.type === 'multiple_choice' && question.options" class="text-muted-foreground">
                                     <RadioGroup disabled>
                                         <div v-for="option in question.options" :key="option"
                                             class="flex items-center space-x-2">
@@ -785,10 +785,10 @@ const submitForm = () => {
                                 <!-- File Upload -->
                                 <div v-if="question.type === 'file_upload'">
                                     <Input type="file" disabled />
-                                    <p class="text-sm text-gray-500 mt-1">File upload field</p>
+                                    <p class="text-sm text-muted-foreground mt-1">File upload field</p>
                                 </div>
                             </div>
-                            <div v-else class="text-gray-500 text-sm">
+                            <div v-else class="text-muted-foreground text-sm">
                                 Please enter question text and select a type to see preview
                             </div>
                         </div>
@@ -802,7 +802,7 @@ const submitForm = () => {
                         </div>
 
                         <!-- Inline Add Question Form -->
-                        <div v-if="showAddForm === index" class="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <div v-if="showAddForm === index" class="mt-4 p-4 bg-background rounded-lg">
                             <div class="space-y-4">
                                 <div class="flex gap-4 items-end">
                                     <div class="flex-1">
@@ -864,8 +864,8 @@ const submitForm = () => {
                     </div>
 
                     <!-- Empty State -->
-                    <div v-if="questions.length === 0" class="text-center py-8 text-gray-500">
-                        <FileText class="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                    <div v-if="questions.length === 0" class="text-center py-8 text-muted-foreground">
+                        <FileText class="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                         <p>No questions available.</p>
                     </div>
                 </div>
@@ -873,7 +873,7 @@ const submitForm = () => {
         </Card>
 
         <!-- Submit Button -->
-        <div class="flex justify-end pt-4">
+        <div class="flex justify-center pt-4">
             <Button @click="submitForm" class="px-8" :disabled="!formDetails.title || checkOneQuestion || registrationDetails.type === null || registrationDetails.start_date === null || registrationDetails.end_date === null">
                 Save Registration Form
             </Button>

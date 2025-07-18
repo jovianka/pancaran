@@ -2,39 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Faculty;
+use App\Models\Major;
+use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\EventRegistration;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class EventDetailController extends Controller
 {
-    public function showDetail($id)
+    public function show($registration_id)
     {
-        // Fetch event with its roles
-        $event = Event::with('roles')->findOrFail($id);
+        // $user = Auth::user();
 
-        // Get the registration linked to the event
-        $registration = EventRegistration::where('event_id', $id)->firstOrFail();
+        $eventRegistration = EventRegistration::with(['event', 'roles', 'questions'])->withCount(['questions', 'responses'])->find($registration_id);
+        $responses = $eventRegistration->responses()->with(['user'])->get();
 
         $info = [
-            'title' => $event->name,
-            'type' => $registration->type, // changed from 'committee' to 'type' to match Vue
-            'poster' => $registration->poster,
-            'startDate' => $registration->start_date,
-            'endDate' => $registration->end_date,
-            'quota' => $event->roles()->whereIn('name', ['peserta', 'anggota'])->sum('quota'),
-            'eventStart' => $event->start_date,
-            'eventEnd' => $event->end_date,
-            'subCommittees' => $event->roles()->whereNotIn('name', ['peserta', 'anggota'])->pluck('name')->toArray(),
-            'description' => $event->description,
-            'requirements' => $event->requirements,
-            'jobDescription' => $event->job_description, // renamed to match the prop in Vue
+            'title' => $eventRegistration->event->name,
+            'poster' => $eventRegistration->poster,
+            'eventStart' => $eventRegistration->event->start_date,
+            'eventEnd' => $eventRegistration->event->end_date,
+            'subCommittees' => $eventRegistration->event->roles()->pluck('name')->toArray(),
+            'description' => $eventRegistration->event->description,
+            'requirements' => $eventRegistration->event->requirements,
+            'jobDescription' => $eventRegistration->event->job_description,
+            'eventId' => $eventRegistration->event->id,
         ];
 
         return Inertia::render('EventDetail', [
             'info' => $info,
-            'event' => $event,
+            'eventRegistration' => $eventRegistration,
+            'responses' => $responses,
+            'faculties' => Faculty::all(),
+            'majors' => Major::all(),
         ]);
     }
+
 }

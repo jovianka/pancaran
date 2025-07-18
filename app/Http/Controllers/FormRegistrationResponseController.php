@@ -3,8 +3,12 @@
 // Fixed Controller
 namespace App\Http\Controllers;
 
+use App\Models\Event;
+use App\Models\EventRegistration;
 use App\Models\EventRegistrationQuestion;
 use App\Models\EventRegistrationResponse;
+use App\Models\EventRole;
+use App\Models\EventUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -14,29 +18,96 @@ use Inertia\Inertia;
 class FormRegistrationResponseController extends Controller
 {
 
-    public function show(Request $request){
+    public function show(Request $request, $registration_id)
+    {
         $user = Auth::user();
-        if ($user->type === "organization"){
-            return redirect()->route(/*Ganti nama routenya sesuai dengan yang benar*/'Registration')->with('error', 'Organisasi dilarang untuk daftar!');
+        if ($user->type === "organization") {
+            return redirect()->route('registration.view', ['id' => $registration_id])->with('error', 'Organisasi dilarang untuk daftar!');
         }
 
-        $validated = $request->validate(rules: [
-            'registration_id' => 'integer',
-        ]);
-
-        $registration_id = $validated['registration_id'];
-        $form_question = EventRegistrationQuestion::GetQuestions(registration_id:$registration_id);
+        $form_question = EventRegistrationQuestion::where('event_registration_id', '=', $registration_id)->first();
         return Inertia::render(component: 'RegistrationForm', props: [
-            'form_question' =>  $form_question,
+            'form_question' => $form_question,
         ]);
     }
 
+    public function showResponse(Request $request, $registration_id, $user_id)
+    {
+        $user = Auth::user();
+        $registration = EventRegistration::find($registration_id);
+
+        if ($user->type !== "organization") {
+            return redirect()->route('registration.view', ['id' => $registration_id])->with('error', 'Organisasi dilarang untuk daftar!');
+        }
+
+        $form_question = EventRegistrationQuestion::where('event_registration_id', '=', $registration_id)->first();
+        $form_answer = EventRegistrationResponse::where('event_registration_id', '=', $registration_id)
+            ->where('user_id', '=', $user_id)->first();
+
+        $event_roles = EventRole::where('event_id', '=', $registration->event_id)->whereNot('name', 'LIKE', 'admin')->get();
+
+        return Inertia::render('RegistrationResponse', [
+            'form_question' => $form_question,
+            'form_answer' => $form_answer,
+            'registration' => $registration,
+            'event_roles' => $event_roles,
+        ]);
+    }
+
+    public function acceptResponse(Request $request)
+    {
+        $request->validate([
+            'registration_id' => 'required|integer',
+            'role_id' => 'required|integer',
+            'user_id' => 'required|integer',
+        ]);
+        $registration = EventRegistration::find($request->registration_id);
+        $role = EventRole::find($request->role_id);
+
+        $sameUserWithSameRoleExists = EventUser::where('event_id', '=', $registration->event_id)
+            ->where('user_id', '=', $request->user_id)
+            ->where('event_role_id', '=', $request->role_id)
+            ->exists();
+
+        if ($sameUserWithSameRoleExists) {
+            return back()->withErrors("This user's already joined the event as {$role->name}");
+        }
+
+        EventUser::create([
+            'status' => 'active',
+            'user_id' => $request->user_id,
+            'event_id' => $registration->event_id,
+            'event_role_id' => $request->role_id,
+        ]);
+
+        $response = EventRegistrationResponse::where('event_registration_id', '=', $request->registration_id)
+            ->where('user_id', '=', $request->user_id)->first();
+
+        $response->delete();
+
+        return to_route('registration.view', ['id' => $registration->id]);
+    }
+
+    public function rejectResponse(Request $request)
+    {
+        $request->validate([
+            'registration_id' => 'required|integer',
+            'user_id' => 'required|integer',
+        ]);
+
+        $response = EventRegistrationResponse::where('event_registration_id', '=', $request->registration_id)
+            ->where('user_id', '=', $request->user_id)->first();
+
+        $response->delete();
+
+        return to_route('registration.view', ['id' => $request->registration_id]);
+    }
 
     public function store(Request $request)
     {
         $user = Auth::user();
 
-        if ($user->type === "organization"){
+        if ($user->type === "organization") {
             return back()->withErrors("Organisasi dilarang untuk daftar")->withInput();
         }
 
@@ -56,7 +127,7 @@ class FormRegistrationResponseController extends Controller
         $errors = [];
 
         foreach ($questions as $question) {
-            if (!empty($question['required'])) {
+            if (! empty($question['required'])) {
                 $answerEntry = $answers->firstWhere('question_id', $question['id']);
                 $value = $answerEntry['answer'] ?? null;
 
@@ -70,7 +141,7 @@ class FormRegistrationResponseController extends Controller
             }
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return back()->withErrors($errors)->withInput();
         }
 

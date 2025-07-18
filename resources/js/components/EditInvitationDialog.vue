@@ -40,7 +40,7 @@ const deleteInvitation = () => {
 
 const updateInvitation = () => {
     form.role_id = roleId.value;
-    form.post(route('members.updateInvitation'), {
+    form.patch(route('members.updateInvitation', { id: props.invitation.id }), {
         preserveState: true,
         onSuccess: () => {
             inviteDialogState.value = false;

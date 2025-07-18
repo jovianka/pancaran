@@ -19,7 +19,7 @@ class EventRegistrationQuestion extends Model
     ];
 
     protected $casts = [
-        'questions' => 'array'
+        'questions' => 'array',
     ];
 
     public function scopeGetQuestions(Builder $query, $registration_id){

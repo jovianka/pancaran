@@ -53,6 +53,7 @@ class FacultySeeder extends Seeder
                 'Fisika',
                 'Kimia',
                 'Biologi',
+                'Informatika',
             ],
             'Kedokteran Hewan' => [
                 'Kedokteran Hewan',

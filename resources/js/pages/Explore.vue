@@ -145,7 +145,7 @@ function resetFilterFromCard(data: string) {
         <div class="bg flex h-full flex-1 flex-col gap-4 rounded-xl px-4">
             <div class="grid auto-rows-min gap-10 px-0 md:grid-cols-2 lg:px-10 xl:grid-cols-3">
                 <CardBox
-                    v-for="registration in registrations.data"
+                    v-for="registration of registrations.data"
                     :key="registration.id"
                     :registration="registration"
                     @tag="handleFilterFromCard"

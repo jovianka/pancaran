@@ -1,18 +1,54 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Head, router } from '@inertiajs/vue3'
-import AppLayout from '@/layouts/AppLayout.vue'
-import Toaster from '@/components/ui/sonner/Sonner.vue'
-import { toast } from 'vue-sonner'
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Toaster from '@/components/ui/sonner/Sonner.vue';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
+import { onMounted, reactive, ref } from 'vue';
+import { toast } from 'vue-sonner';
+
+interface Question {
+    id: number;
+    question: string;
+    type: string;
+    required: boolean;
+    options?: string[] | null;
+}
+
+interface FormQuestion {
+    id: number;
+    title: string;
+    description: string;
+    questions: Question[];
+    created_at: Date;
+    updated_at: Date;
+    event_registration_id: number;
+}
+
+interface FormAnswer {
+    question_id: number;
+    question: string;
+    type: string;
+    options?: string[] | null;
+    required: boolean;
+    answer: string | string[];
+}
+
+const props = defineProps<{
+    form_question: FormQuestion;
+}>();
+
+const formData: Record<string, any> = reactive({});
+const errors: Record<string, string> = reactive({});
+const isSubmitting = ref<boolean>(false);
+const isSubmitted = ref<boolean>(false);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -21,7 +57,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Registration',
-        href: '/explore/${props.form_question.event_registration_id}',
+        href: `/registration/${props.form_question.event_registration_id}`,
     },
     {
         title: 'Form',
@@ -29,244 +65,148 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-
-interface Question {
-    id: number;
-    question: string;
-    type: string;
-    required: boolean
-    options?: string[] | null;
-}
-
-interface FormQuestion{
-    id: number;
-    title: string;
-    description: string;
-    details: Question[];
-    created_at: Date;
-    updated_at: Date;
-    event_registration_id: number;
-}
-
-
-interface FormAnswer {
-    question_id: number;
-    answer: string | string[];
-}
-
-const props = withDefaults(defineProps<{
-    form_question: FormQuestion;
-}>(), {
-    // Static data for testing - replace when connected to backend
-    form_question: () => ({
-        id: 1,
-        title: 'Form Judul Contoh',
-        description: 'Ini adalah deskripsi form contoh.',
-        created_at: new Date(),
-        updated_at: new Date(),
-        details: [
-            {
-                id: 0,
-                question: 'Siapa nama lengkap kamu?',
-                type: 'text',
-                required: true,
-                options: null
-            },
-            {
-                id: 1,
-                question: 'Kamu biasa dipanggil dengan nama apa?',
-                type: 'text',
-                required: true,
-                options: null
-            },
-            {
-                id: 2,
-                question: 'Coba kamu ceritakan pengalaman kepanitaanmu!',
-                type: 'paragraph',
-                required: true,
-                options: null
-            },
-            {
-                id: 3,
-                question: 'How would you rate our service?',
-                type: 'multiple_choice',
-                required: true,
-                options: ['Excellent', 'Good', 'Average', 'Poor']
-            },
-            {
-                id: 4,
-                question: 'Which features did you use? (Select all that apply)',
-                type: 'checkbox',
-                required: false,
-                options: ['Dashboard', 'Reports', 'User Management', 'API Integration', 'Mobile App']
-            },
-            {
-                id: 5,
-                question: 'Which department are you from?',
-                type: 'dropdown',
-                required: true,
-                options: ['Sales', 'Marketing', 'Engineering', 'Support', 'HR', 'Other']
-            },
-            {
-                id: 6,
-                question: 'Upload any relevant documents',
-                type: 'file_upload',
-                required: false,
-                options: null
-            }
-        ],
-        event_registration_id: 1,
-    }),
+onMounted(() => {
+    for (const question of props.form_question.questions) {
+        if (question.type === 'checkbox') {
+            formData[question.id] = [];
+        } else {
+            formData[question.id] = '';
+        }
+    }
 });
 
-const formData: Record<string, any> = reactive({})
-const errors: Record<string, string> = reactive({})
-const isSubmitting = ref<boolean>(false)
-const isSubmitted = ref<boolean>(false)
-
-onMounted(() => {
-    props.form_question.details.forEach(question => {
-        if (question.type === 'checkbox') {
-            formData[question.id] = []
-        } else {
-            formData[question.id] = ''
-        }
-    })
-})
-
-const updateCheckbox = (questionId: number, option: string, checked: boolean) => {
+const updateCheckbox = (questionId: number, option: string) => {
     if (!formData[questionId]) {
-        formData[questionId] = []
+        formData[questionId] = [];
     }
-    const currentValues = [...formData[questionId]]
-    const index = currentValues.indexOf(option)
-    if (checked && index === -1) {
-        currentValues.push(option)
-    } else if (!checked && index !== -1) {
-        currentValues.splice(index, 1)
+
+    let currentValues = [...formData[questionId]];
+    if (!currentValues.includes(option)) {
+        currentValues.push(option);
+    } else {
+        currentValues = currentValues.filter((value: string) => value !== option);
     }
-    formData[questionId] = currentValues
-}
+
+    formData[questionId] = currentValues;
+};
 
 const handleFileUpload = (questionId: number, event: Event) => {
-    const target = event.target as HTMLInputElement
-    const files = target.files ? Array.from(target.files) : []
-    formData[questionId] = files
-}
+    const target = event.target as HTMLInputElement;
+    const files = target.files ? Array.from(target.files) : [];
+    formData[questionId] = files;
+};
 
 const getFileNames = (questionId: number): string => {
-    const files = formData[questionId] as File[]
-    if (!files || files.length === 0) return 'Tidak ada file dipilih'
-    return files.map(file => file.name).join(', ')
-}
+    const files = formData[questionId] as File[];
+    if (!files || files.length === 0) return 'Tidak ada file dipilih';
+    return files.map((file) => file.name).join(', ');
+};
 
 const validateForm = (): boolean => {
-    Object.keys(errors).forEach(key => delete errors[key])
-    const newErrors: Record<string, string> = {}
+    Object.keys(errors).forEach((key) => delete errors[key]);
+    const newErrors: Record<string, string> = {};
 
-    props.form_question.details.forEach(question => {
-        const value = formData[question.id]
+    props.form_question.questions.forEach((question) => {
+        const value = formData[question.id];
         if (question.required && (!value || (typeof value === 'string' && value.trim() === '') || (Array.isArray(value) && value.length === 0))) {
-            newErrors[question.id] = 'Bagian ini wajib diisi'
+            newErrors[question.id] = 'Bagian ini wajib diisi';
         }
-    })
+    });
 
-    Object.assign(errors, newErrors)
-    return Object.keys(newErrors).length === 0
-}
+    Object.assign(errors, newErrors);
+    return Object.keys(newErrors).length === 0;
+};
 
 const formatAnswersForDatabase = (): FormAnswer[] => {
-    const answers: FormAnswer[] = []
+    const answers: FormAnswer[] = [];
 
-    props.form_question.details.forEach(question => {
-        const value = formData[question.id]
-        let formattedAnswer: string | string[]
+    props.form_question.questions.forEach((question) => {
+        const value = formData[question.id];
+        let formattedAnswer: string | string[];
 
         if (question.type === 'checkbox') {
-            formattedAnswer = value || []
+            formattedAnswer = value || [];
         } else if (question.type === 'file_upload') {
             // For file uploads, you might want to store file paths or names
             if (value && Array.isArray(value)) {
-                formattedAnswer = value.map((file: File) => file.name)
+                formattedAnswer = value.map((file: File) => file.name);
             } else {
-                formattedAnswer = ''
+                formattedAnswer = '';
             }
         } else {
-            formattedAnswer = value || ''
+            formattedAnswer = value || '';
         }
 
         answers.push({
             question_id: question.id,
-            answer: formattedAnswer
-        })
-    })
+            question: question?.question,
+            type: question?.type,
+            required: question?.required,
+            options: question?.options,
+            answer: formattedAnswer,
+        });
+    });
 
-    return answers
-}
+    return answers;
+};
 
 const submitForm = async () => {
     if (!validateForm()) {
-        toast.error('Mohon lengkapi semua field yang wajib diisi')
-        return
+        toast.error('Mohon lengkapi semua field yang wajib diisi');
+        return;
     }
 
-    isSubmitting.value = true
+    isSubmitting.value = true;
 
     try {
-        const formattedAnswers: FormAnswer[] = formatAnswersForDatabase()
+        const formattedAnswers: FormAnswer[] = formatAnswersForDatabase();
 
         const submitData: Record<string, any> = {
-            questions: props.form_question.details,
+            questions: props.form_question.questions,
             registration_id: props.form_question.event_registration_id,
-            answers: formattedAnswers
-        }
+            answers: formattedAnswers,
+        };
 
         router.post(`/registration/${props.form_question.id}/submit`, submitData, {
             preserveScroll: true,
             onSuccess: () => {
-                isSubmitted.value = true
+                isSubmitted.value = true;
                 toast.success('Formulir berhasil dikirim!', {
                     description: 'Terima kasih atas respon Anda',
                     duration: 4000,
-                })
+                });
             },
             onError: (inertiaErrors) => {
-                console.error('Submission failed:', inertiaErrors)
-                Object.assign(errors, inertiaErrors)
+                console.error('Submission failed:', inertiaErrors);
+                Object.assign(errors, inertiaErrors);
                 toast.error('Gagal mengirim formulir!', {
                     description: 'Terjadi kesalahan saat menyimpan. Silakan coba lagi.',
                     duration: 4000,
-                })
+                });
             },
             onFinish: () => {
-                isSubmitting.value = false
-            }
-        })
-
+                isSubmitting.value = false;
+            },
+        });
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan tidak terduga'
+        const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan tidak terduga';
         toast.error('Terjadi kesalahan', {
             description: errorMessage,
             duration: 4000,
-        })
-        console.error('Submission error:', error)
-        isSubmitting.value = false
+        });
+        console.error('Submission error:', error);
+        isSubmitting.value = false;
     }
-}
-
+};
 </script>
 
 <template>
     <Head title="Registration Form" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Toaster
-            position="top-center"
-            :rich-colors="true"
-            :close-button="true"
-        />
-        <div class="max-w-4xl mx-auto p-6">
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">{{ form_question.title }}</h1>
+        <Toaster position="top-center" :rich-colors="true" :close-button="true" />
+        <div class="mx-auto max-w-4xl p-6">
+            <div class="mb-8 text-center">
+                <h1 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">{{ form_question.title }}</h1>
                 <p class="text-gray-600 dark:text-gray-200">{{ form_question.description }}</p>
             </div>
 
@@ -277,11 +217,11 @@ const submitForm = async () => {
                 <CardContent>
                     <form @submit.prevent="submitForm" class="space-y-6">
                         <!-- Generate Questions -->
-                        <div v-for="(question, index) in form_question.details" :key="question.id" class="space-y-3">
+                        <div v-for="question in form_question.questions" :key="question.id" class="space-y-3">
                             <div class="border-b pb-4">
-                                <Label :for="`question-${question.id}`" class="text-base font-medium block mb-3">
+                                <Label :for="`question-${question.id}`" class="mb-3 block text-base font-medium">
                                     {{ question.question }}
-                                    <span v-if="question.required" class="text-red-500 ml-1">*</span>
+                                    <span v-if="question.required" class="ml-1 text-red-500">*</span>
                                 </Label>
 
                                 <!-- Text -->
@@ -312,7 +252,7 @@ const submitForm = async () => {
                                 <div v-if="question.type === 'multiple_choice'">
                                     <RadioGroup
                                         :model-value="formData[question.id]"
-                                        @update:model-value="(value) => formData[question.id] = value"
+                                        @update:model-value="(value) => (formData[question.id] = value)"
                                         class="space-y-2"
                                     >
                                         <div v-for="option in question.options" :key="option" class="flex items-center space-x-2">
@@ -326,11 +266,7 @@ const submitForm = async () => {
                                 <div v-if="question.type === 'checkbox'">
                                     <div class="space-y-2">
                                         <div v-for="option in question.options" :key="option" class="flex items-center space-x-2">
-                                            <Checkbox
-                                                :id="`${question.id}-${option}`"
-                                                :checked="formData[question.id]?.includes(option)"
-                                                @update:checked="(checked: boolean) => updateCheckbox(question.id, option, checked)"
-                                            />
+                                            <Checkbox :id="`${question.id}-${option}`" @click="() => updateCheckbox(question.id, option)" />
                                             <Label :for="`${question.id}-${option}`" class="text-sm font-normal">{{ option }}</Label>
                                         </div>
                                     </div>
@@ -338,10 +274,7 @@ const submitForm = async () => {
 
                                 <!-- Dropdown -->
                                 <div v-if="question.type === 'dropdown'">
-                                    <Select
-                                        :model-value="formData[question.id]"
-                                        @update:model-value="(value) => formData[question.id] = value"
-                                    >
+                                    <Select :model-value="formData[question.id]" @update:model-value="(value) => (formData[question.id] = value)">
                                         <SelectTrigger class="w-full">
                                             <SelectValue placeholder="Pilih Opsi" />
                                         </SelectTrigger>
@@ -362,13 +295,13 @@ const submitForm = async () => {
                                         :required="question.required"
                                         class="w-full"
                                     />
-                                    <p class="text-sm text-gray-500 mt-2" v-if="formData[question.id]">
+                                    <p class="mt-2 text-sm text-gray-500" v-if="formData[question.id]">
                                         Selected files: {{ getFileNames(question.id) }}
                                     </p>
                                 </div>
 
                                 <!-- Validation Error -->
-                                <div v-if="errors[question.id]" class="text-red-500 text-sm mt-2">
+                                <div v-if="errors[question.id]" class="mt-2 text-sm text-red-500">
                                     {{ errors[question.id] }}
                                 </div>
                             </div>

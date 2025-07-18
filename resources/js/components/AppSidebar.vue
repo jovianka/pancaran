@@ -54,7 +54,7 @@ const mainNavItems = computed<NavItem[]>(() => {
             icon: CalendarClock,
             children: [
                 { title: 'Your Activity', href: '/activity' },
-                { title: 'Create an Event', href: '/event/create' },
+                { title: 'Create an Event', href: '/create-event' },
             ],
         });
     }

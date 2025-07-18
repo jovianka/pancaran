@@ -9,15 +9,13 @@ use Inertia\Inertia;
 
 class RegistrationSettingController extends Controller
 {
-    public function show(Request $request){
-        // $validation = $request->validate(rules:[
-        //     'event_id' => 'required'|'number',
-        // ]);
-        return Inertia::render(component:'CreateRegistrationForm');
-        // return Inertia::render(component:'CreateRegistrationForm', props:['event_id' => $validation['event_id']]);
+    public function show(Request $request, $event_id)
+    {
+        return Inertia::render(component: 'CreateRegistrationForm', props: ['event_id' => (int) $event_id]);
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $questionsData = null;
         if ($request->has('questions')) {
             $questionsData = json_decode($request->input('questions'), true);
@@ -41,36 +39,36 @@ class RegistrationSettingController extends Controller
         ]);
 
         if (filter_var($validatedData['event_id'], FILTER_VALIDATE_INT) !== false) {
-            $event_id = (int)($validatedData['event_id']);
+            $event_id = (int) ($validatedData['event_id']);
         } else {
             return back()->withErrors(['error' => 'Invalid Event Id'])->withInput();
         }
 
 
         // Validasi questions array secara manual
-        if (!$questionsData || !is_array($questionsData) || count($questionsData) === 0) {
+        if (! $questionsData || ! is_array($questionsData) || count($questionsData) === 0) {
             return back()->withErrors(['questions' => 'At least one question is required']);
         }
 
         // Validasi struktur setiap question
         foreach ($questionsData as $index => $question) {
-            if (!isset($question['question']) || empty(trim($question['question']))) {
+            if (! isset($question['question']) || empty(trim($question['question']))) {
                 return back()->withErrors(["questions.{$index}.question" => 'Question text is required']);
             }
 
-            if (!isset($question['type']) || empty($question['type'])) {
+            if (! isset($question['type']) || empty($question['type'])) {
                 return back()->withErrors(["questions.{$index}.type" => 'Question type is required']);
             }
 
             // Validasi type yang valid
-            $validTypes = ['text', 'paragraph', 'multiple_choice', 'checkbox', 'dropdown','file_upload'];
-            if (!in_array($question['type'], $validTypes)) {
+            $validTypes = ['text', 'paragraph', 'multiple_choice', 'checkbox', 'dropdown', 'file_upload'];
+            if (! in_array($question['type'], $validTypes)) {
                 return back()->withErrors(["questions.{$index}.type" => 'Invalid question type']);
             }
 
             // Validasi options untuk type yang membutuhkan pilihan
             if (in_array($question['type'], ['multiple_choice', 'checkbox', 'dropdown'])) {
-                if (!isset($question['options']) || !is_array($question['options']) || count($question['options']) === 0) {
+                if (! isset($question['options']) || ! is_array($question['options']) || count($question['options']) === 0) {
                     return back()->withErrors(["questions.{$index}.options" => 'Options are required for this question type']);
                 }
 
@@ -83,7 +81,7 @@ class RegistrationSettingController extends Controller
             }
 
             // Validasi required field
-            if (!isset($question['required']) || !is_bool($question['required'])) {
+            if (! isset($question['required']) || ! is_bool($question['required'])) {
                 return back()->withErrors(["questions.{$index}.required" => 'Required field must be boolean']);
             }
         }
@@ -91,7 +89,7 @@ class RegistrationSettingController extends Controller
         // Proses upload poster jika ada
         $posterPath = null;
         if ($request->hasFile('poster')) {
-            $posterPath = $request->file('poster')->store('posters', 'public');
+            $posterPath = $request->file('poster')->store('registration_posters', 'local');
         }
 
         // Simpan data ke database
@@ -114,7 +112,8 @@ class RegistrationSettingController extends Controller
 
 
             // delete this after all linked pages are complete
-            return redirect()->back()->with('success', 'Registration form created successfully!');
+            // return redirect()->back()->with('success', 'Registration form created successfully!');
+            return redirect('/registration/'.$registration->id);
             // uncomment these after all linked pages are complete
             // return redirect()->route('event_detail??') <--Ganti nama route yang sesuai!
             //  ->with('success', 'Pendaftaran berhasil dibuat!') <--Yang bawah ini tidak harus digunakan!
@@ -122,22 +121,20 @@ class RegistrationSettingController extends Controller
 
         } catch (\Exception $e) {
 
-            error_log('Registration form creation failed: ' . $e->getMessage());
-            dd('Error: ' . $e->getMessage(), $e->getTraceAsString());
+            error_log('Registration form creation failed: '.$e->getMessage());
+            dd('Error: '.$e->getMessage(), $e->getTraceAsString());
 
             return back()->withErrors(['error' => 'Failed to create registration form']);
         }
     }
 
-    public function show_edit(Request $request){
-        $validation = $request->validate([
-            'registration_id' => 'required|numeric',
-        ]);
+    public function show_edit(Request $request, $registration_id)
+    {
 
         // dd($request->all());
 
-        $registration = EventRegistration::findOrFail($validation['registration_id']);
-        $registration_questions = EventRegistrationQuestion::where('event_registration_id', $validation['registration_id'])->latest()->first();
+        $registration = EventRegistration::findOrFail($registration_id);
+        $registration_questions = EventRegistrationQuestion::where('event_registration_id', $registration_id)->latest()->first();
 
         // dd([
         //     'raw' => $registration_questions->getRawOriginal('questions'),
@@ -145,13 +142,14 @@ class RegistrationSettingController extends Controller
         //     'full' => $registration_questions->toArray()
         // ]);
 
-        return Inertia::render(component:'EditRegistrationForm', props:[
+        return Inertia::render(component: 'EditRegistrationForm', props: [
             'event_registration' => $registration,
             'event_registration_form' => $registration_questions
         ]);
     }
 
-    public function update_registration(Request $request){
+    public function update_registration(Request $request)
+    {
         $questionsData = null;
         if ($request->has('questions')) {
             $questionsData = json_decode($request->input('questions'), true);
@@ -180,14 +178,14 @@ class RegistrationSettingController extends Controller
 
         // Validasi dan konversi registration_id
         if (filter_var($validatedData['registration_id'], FILTER_VALIDATE_INT) !== false) {
-            $registration_id = (int)($validatedData['registration_id']);
+            $registration_id = (int) ($validatedData['registration_id']);
         } else {
             return back()->withErrors(['error' => 'Invalid Registration Id'])->withInput();
         }
 
         // Validasi dan konversi form_id
         if (filter_var($validatedData['form_id'], FILTER_VALIDATE_INT) !== false) {
-            $form_id = (int)($validatedData['form_id']);
+            $form_id = (int) ($validatedData['form_id']);
         } else {
             return back()->withErrors(['error' => 'Invalid Form Id'])->withInput();
         }
@@ -200,29 +198,29 @@ class RegistrationSettingController extends Controller
         }
 
         // Validasi questions array secara manual
-        if (!$questionsData || !is_array($questionsData) || count($questionsData) === 0) {
+        if (! $questionsData || ! is_array($questionsData) || count($questionsData) === 0) {
             return back()->withErrors(['questions' => 'At least one question is required']);
         }
 
         // Validasi struktur setiap question
         foreach ($questionsData as $index => $question) {
-            if (!isset($question['question']) || empty(trim($question['question']))) {
+            if (! isset($question['question']) || empty(trim($question['question']))) {
                 return back()->withErrors(["questions.{$index}.question" => 'Question text is required']);
             }
 
-            if (!isset($question['type']) || empty($question['type'])) {
+            if (! isset($question['type']) || empty($question['type'])) {
                 return back()->withErrors(["questions.{$index}.type" => 'Question type is required']);
             }
 
             // Validasi type yang valid
-            $validTypes = ['text', 'paragraph', 'multiple_choice', 'checkbox', 'dropdown','file_upload'];
-            if (!in_array($question['type'], $validTypes)) {
+            $validTypes = ['text', 'paragraph', 'multiple_choice', 'checkbox', 'dropdown', 'file_upload'];
+            if (! in_array($question['type'], $validTypes)) {
                 return back()->withErrors(["questions.{$index}.type" => 'Invalid question type']);
             }
 
             // Validasi options untuk type yang membutuhkan pilihan
             if (in_array($question['type'], ['multiple_choice', 'checkbox', 'dropdown'])) {
-                if (!isset($question['options']) || !is_array($question['options']) || count($question['options']) === 0) {
+                if (! isset($question['options']) || ! is_array($question['options']) || count($question['options']) === 0) {
                     return back()->withErrors(["questions.{$index}.options" => 'Options are required for this question type']);
                 }
 
@@ -235,7 +233,7 @@ class RegistrationSettingController extends Controller
             }
 
             // Validasi required field
-            if (!isset($question['required']) || !is_bool($question['required'])) {
+            if (! isset($question['required']) || ! is_bool($question['required'])) {
                 return back()->withErrors(["questions.{$index}.required" => 'Required field must be boolean']);
             }
         }
@@ -252,25 +250,25 @@ class RegistrationSettingController extends Controller
 
             // Cek apakah ada perubahan pada registration details
             $registrationChanged = ($existingRegistration->status !== $validatedData['status']) ||
-                                ($existingRegistration->start_date !== $validatedData['start_date']) ||
-                                ($existingRegistration->end_date !== $validatedData['end_date']) ||
-                                $request->hasFile('poster') ||
-                                $delete_poster;
+                ($existingRegistration->start_date !== $validatedData['start_date']) ||
+                ($existingRegistration->end_date !== $validatedData['end_date']) ||
+                $request->hasFile('poster') ||
+                $delete_poster;
 
             // Handle poster upload/deletion
             $posterPath = $existingRegistration->poster;
             if ($delete_poster) {
                 // Hapus poster lama jika ada
-                if ($posterPath && Storage::disk('public')->exists($posterPath)) {
-                    Storage::disk('public')->delete($posterPath);
+                if ($posterPath && Storage::disk('local')->exists('registration_posters'.$posterPath)) {
+                    Storage::disk('local')->delete('registration_posters'.$posterPath);
                 }
                 $posterPath = null;
             } elseif ($request->hasFile('poster')) {
                 // Hapus poster lama jika ada
-                if ($posterPath && Storage::disk('public')->exists($posterPath)) {
-                    Storage::disk('public')->delete($posterPath);
+                if ($posterPath && Storage::disk('local')->exists('registration_posters'.$posterPath)) {
+                    Storage::disk('local')->delete('registration_posters'.$posterPath);
                 }
-                $posterPath = $request->file('poster')->store('posters', 'public');
+                $posterPath = $request->file('poster')->store('registration_posters', 'local');
             }
 
             // Update registration jika ada perubahan
@@ -285,12 +283,12 @@ class RegistrationSettingController extends Controller
 
             // Update form jika ada perubahan
             if ($questionsChanged) {
-                $newForm = new EventRegistrationQuestion();
-                $newForm->title = $validatedData['title'];
-                $newForm->description = $validatedData['description'];
-                $newForm->questions = $questionsData;
-                $newForm->event_registration_id = $existingRegistration->id;
-                $newForm->save();
+                $newForm = EventRegistrationQuestion::findOrFail($form_id);
+                $newForm->update([
+                    'title' => $validatedData['title'],
+                    'description' => $validatedData['description'],
+                    'questions' => $questionsData,
+                ]);
             }
 
 
@@ -302,26 +300,34 @@ class RegistrationSettingController extends Controller
             }
 
         } catch (\Exception $e) {
-            error_log('Registration form update failed: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Failed to update registration: ' . $e->getMessage()]);
+            error_log('Registration form update failed: '.$e->getMessage());
+            return back()->withErrors(['error' => 'Failed to update registration: '.$e->getMessage()]);
         }
     }
 
-    public function delete_registration(Request $request){
+    public function delete_registration(Request $request)
+    {
         $validatedData = $request->validate([
             'registration_id' => 'required|numeric',
         ]);
 
         $registration = EventRegistration::findOrFail($validatedData['registration_id']);
-        try{
-            if ($registration){
+        try {
+            if ($registration) {
                 $registration->delete();
                 return redirect()->route('testing')->with('success', 'Registration deleted successfully!'); // Ganti redirect ke route yang sesuai
             }
-        }
-        catch (\Exception $e){
-            error_log('Delete Registration failed: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Failed to delete registration: ' . $e->getMessage()]);
+        } catch (\Exception $e) {
+            error_log('Delete Registration failed: '.$e->getMessage());
+            return back()->withErrors(['error' => 'Failed to delete registration: '.$e->getMessage()]);
         }
     }
+
+    public function getPoster(Request $request, $registration_id)
+    {
+        $registration = EventRegistration::find($registration_id);
+        $image = Storage::disk('local')->path($registration->poster);
+        return response()->file($image);
+    }
+
 }
