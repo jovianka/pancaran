@@ -12,9 +12,8 @@ class ActivityDetailController extends Controller
 {
     public function show($id)
     {
-        // $user = Auth::user();
-
-        $event = Event::with('roles')->findOrFail($id);
+        $event = Event::with(['roles'])->findOrFail($id);
+        $eventRegistrations = $event->registrations()->withCount(['questions', 'responses'])->with(['roles'])->get();
 
         $info = [
             'title' => $event->name,
@@ -31,6 +30,7 @@ class ActivityDetailController extends Controller
         return Inertia::render('ActivityDetail', [
             'info' => $info,
             'event' => $event,
+            'eventRegistrations' => $eventRegistrations,
         ]);
     }
 

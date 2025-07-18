@@ -111,7 +111,7 @@ onMounted(async () => {
                 <p class="text-foreground/60">
                     Held by
                     <span>
-                        {{ props.certificate.event?.eventUsers?.find((eu) => eu.role?.name === 'admin')?.user?.name ?? 'Tidak ada admin' }}
+                        {{ props.certificate.event?.eventUsers?.find((eu) => eu.role?.name!.toUpperCase() === 'ADMIN')?.user?.name ?? 'Tidak ada admin' }}
                     </span>
                 </p>
             </div>

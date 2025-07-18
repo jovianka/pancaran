@@ -31,7 +31,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
     {
         title: 'Create Event',
-        href: '/event/create',
+        href: '/create-event',
     },
 ];
 

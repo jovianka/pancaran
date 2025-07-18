@@ -47,12 +47,19 @@ const selectedRole = computed(() => {
 });
 
 const font: Font = {
-    Serif: {
-        data: 'https://raw.githubusercontent.com/google/fonts/refs/heads/main/ofl/notoserif/NotoSerif%5Bwdth%2Cwght%5D.ttf',
-        fallback: true,
+    'PinyonScript-Regular': {
+        fallback: false,
+        data: 'https://fonts.gstatic.com/s/pinyonscript/v22/6xKpdSJbL9-e9LuoeQiDRQR8aOLQO4bhiDY.ttf',
     },
-    SansSerif: {
-        data: 'https://raw.githubusercontent.com/google/fonts/refs/heads/main/ofl/cantarell/Cantarell-Regular.ttf',
+
+    NotoSerifJP: {
+        fallback: true,
+        data: 'https://fonts.gstatic.com/s/notoserifjp/v30/xn71YHs72GKoTvER4Gn3b5eMRtWGkp6o7MjQ2bwxOubAILO5wBCU.ttf',
+    },
+
+    NotoSansJP: {
+        fallback: false,
+        data: 'https://fonts.gstatic.com/s/notosansjp/v53/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj75vY0rw-oME.ttf',
     },
 };
 const template = JSON.parse(props.defaultCertificateTemplate);
@@ -82,16 +89,27 @@ const getSelectedRoleBasePdf = async () => {
 };
 
 const generateCertificates = () => {
-    if (nomorSuratInput.value === '' || selectedRole.value === null) {
-        alert('FIll nomor surat input and pick a role!');
+    if (nomorSuratInput.value === '') {
+        alert('FIll nomor surat input');
         return;
     }
+
+    if (selectedRole.value === null) {
+        alert('Pick a Role');
+        return;
+    }
+
+    if (!selectedRole.value.detail_skp_id) {
+        alert('Role must have SKP Detail!');
+        return;
+    }
+
     pdfDesignerInstance.saveTemplate();
 
     const promises = selectedRole.value.users.map(async (user: any) => {
         const inputs = [{ nama: user.name }];
         const currentTemplate = pdfDesignerInstance.getTemplate();
-        const pdf = await generate({ template: currentTemplate, inputs });
+        const pdf = await generate({ template: currentTemplate, options: options, plugins: plugins, inputs });
         const blob = new Blob([pdf], { type: 'application/pdf' });
 
         return {
@@ -179,36 +197,45 @@ watch(selectedRole, async () => {
             <Heading title="Manage Certificates" description="Create Templates and Generate Certificate PDFs for each role" />
 
             <h3 class="mb-3 font-bold">Create Template</h3>
-            <div class="mb-3 flex flex-row items-center gap-3">
-                <DropdownMenu>
-                    <Button variant="secondary" as-child>
-                        <DropdownMenuTrigger class="uppercase hover:cursor-pointer">
-                            {{ selectedRole ? selectedRole.name : 'Select Role' }}
-                            <ChevronsUpDownIcon />
-                        </DropdownMenuTrigger>
-                    </Button>
-                    <DropdownMenuContent>
-                        <DropdownMenuRadioGroup v-model="selectedRoleId">
-                            <DropdownMenuRadioItem v-for="role of props.eventRoles" :key="role.id" class="uppercase" :value="String(role.id)">
-                                {{ role.name }}
-                            </DropdownMenuRadioItem>
-                        </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                <Input type="text" v-model="nomorSuratInput" class="max-w-sm" placeholder="Nomor Surat" />
-                <!-- @vue-ignore copying styles from the component because the component's broken for some reason. Couldn't reset its value -->
-                <input
-                    type="file"
-                    accept="application/pdf"
-                    @input="(ev) => (fileInput = ev.target.files[0])"
-                    :class="
-                        cn(
-                            'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-                            'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-                            'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
-                        )
-                    "
-                />
+            <div class="mb-3 flex flex-row items-end gap-3">
+                <div class="flex flex-col gap-2 text-sm">
+                    <span>Role</span>
+                    <DropdownMenu>
+                        <Button variant="secondary" as-child>
+                            <DropdownMenuTrigger class="uppercase hover:cursor-pointer">
+                                {{ selectedRole ? selectedRole.name : 'Select Role' }}
+                                <ChevronsUpDownIcon />
+                            </DropdownMenuTrigger>
+                        </Button>
+                        <DropdownMenuContent>
+                            <DropdownMenuRadioGroup v-model="selectedRoleId">
+                                <DropdownMenuRadioItem v-for="role of props.eventRoles" :key="role.id" class="uppercase" :value="String(role.id)">
+                                    {{ role.name }}
+                                </DropdownMenuRadioItem>
+                            </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+                <div class="flex flex-col gap-2 text-sm">
+                    <span>Nomor Surat</span>
+                    <Input type="text" v-model="nomorSuratInput" class="max-w-sm" placeholder="Nomor Surat" />
+                </div>
+                <div class="flex flex-col gap-2 text-sm">
+                    <span>Template Surat (.pdf)</span>
+                    <!-- @vue-ignore copying styles from the component because the component's broken for some reason. Couldn't reset its value -->
+                    <input
+                        type="file"
+                        accept="application/pdf"
+                        @input="(ev) => (fileInput = ev.target.files[0])"
+                        :class="
+                            cn(
+                                'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+                                'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+                                'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+                            )
+                        "
+                    />
+                </div>
                 <Button variant="default" @click="pdfDesignerInstance?.saveTemplate()">Save Template</Button>
                 <Button variant="default" @click="generateCertificates">Generate & Send Certificates</Button>
             </div>
@@ -237,7 +264,7 @@ watch(selectedRole, async () => {
                         <TableCell>{{ certificate.role.name.toUpperCase() }}</TableCell>
                         <TableCell>
                             <a :href="route('event.downloadCertificateFile', { filename: certificate.file })" target="_blank" rel="noopener" as-child>
-                                <Button variant="link" class="p-0 text-blue-200">Download File</Button>
+                                <Button variant="link" class="p-0 text-blue-400">Download File</Button>
                             </a>
                         </TableCell>
                         <TableCell>

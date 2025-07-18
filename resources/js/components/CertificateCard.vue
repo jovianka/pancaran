@@ -70,7 +70,7 @@ onMounted(async () => {
 
             <!-- Admin / Held By -->
             <p class="text-xs text-gray-500 dark:text-gray-400">
-                Held by {{ certificate?.event?.eventUsers?.find((eu) => eu?.role?.name === 'admin')?.user?.name ?? 'Tidak ada admin' }}
+                Held by {{ certificate?.event?.eventUsers?.find((eu) => eu.role?.name!.toUpperCase() === 'ADMIN')?.user?.name ?? 'Tidak ada admin' }}
             </p>
 
             <!-- SKP -->

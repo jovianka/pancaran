@@ -3,9 +3,12 @@
 import TiptapViewer from '@/components/TiptapViewer.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { EyeIcon, PencilIcon, PlusIcon } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 const activeTab = ref<'info' | 'jobdesk'>('info');
@@ -16,6 +19,7 @@ const toggleTab = (tab: 'info' | 'jobdesk') => {
 
 const props = defineProps<{
     event: any;
+    eventRegistrations: any;
     info: {
         title: string;
         type: string;
@@ -52,7 +56,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
             <div class="bg-background flex flex-col gap-6 rounded-xl border p-6 shadow-md lg:flex-row">
                 <!-- Left (Poster & Action Buttons) -->
-                <div class="flex max-w-sm lg:max-w-md lg:w-md flex-col items-center gap-6">
+                <div class="flex max-w-sm flex-col items-center gap-6 lg:w-md lg:max-w-md">
                     <img
                         :src="
                             props.event.poster
@@ -127,18 +131,72 @@ const breadcrumbs: BreadcrumbItem[] = [
 
                     <div class="flex w-full flex-wrap gap-2">
                         <Link :href="route('event.edit', { id: event.id })">
-                            <Button variant="outline" class="w-32 lg:text-md p-5"> Edit Event </Button>
+                            <Button variant="outline" class="lg:text-md w-32 p-5"> Edit Event </Button>
                         </Link>
                         <Link :href="route('members.view', { id: event.id })">
-                            <Button variant="outline" class="w-32 lg:text-md p-5"> Members </Button>
+                            <Button variant="outline" class="lg:text-md w-32 p-5"> Members </Button>
                         </Link>
                         <Link :href="route('certificates.manage', { id: event.id })">
-                            <Button variant="outline" class="w-32 lg:text-md p-5"> Certificates </Button>
+                            <Button variant="outline" class="lg:text-md w-32 p-5"> Certificates </Button>
                         </Link>
                         <Link href="">
-                            <Button variant="destructive" class="w-32 lg:text-md p-5"> Leave </Button>
+                            <Button variant="destructive" class="lg:text-md w-32 p-5"> Leave </Button>
                         </Link>
                     </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="mb-4 flex flex-row items-center gap-3">
+                    <h3 class="text-xl font-bold">Registrations</h3>
+                    <Link :href="route('create-registration', { event_id: props.event.id })">
+                        <Button variant="outline" class="flex flex-row">
+                            <span>Create Registration</span>
+                            <PlusIcon />
+                        </Button>
+                    </Link>
+                </div>
+                <div class="flex flex-row flex-wrap gap-5">
+                    <Card v-for="(registration, index) of props.eventRegistrations" :key="index" class="w-sm">
+                        <CardHeader>
+                            <CardTitle>{{ `Registration ${index + 1}` }}</CardTitle>
+                            <CardDescription class="text-muted-foreground">{{
+                                `${registration.start_date} until ${registration.end_date}`
+                            }}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div class="grid w-full items-center gap-4">
+                                <div class="flex flex-row gap-2">
+                                    <span>Questions count: {{ registration.questions_count }}</span>
+                                </div>
+                                <div class="flex flex-row gap-2">
+                                    <span>Responses count: {{ registration.responses_count }}</span>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter class="flex justify-end gap-3 px-6">
+                            <Tooltip :delay-duration="200">
+                                <TooltipTrigger as-child>
+                                    <Link
+                                        :href="route('registration.view', { id: registration.id })"
+                                        class="bg-foreground hover:bg-foreground/60 block size-fit rounded-full p-2 transition-all duration-300"
+                                        ><EyeIcon class="text-background size-4"
+                                    /></Link>
+                                </TooltipTrigger>
+                                <TooltipContent>Event Details</TooltipContent>
+                            </Tooltip>
+                            <Tooltip :delay-duration="200">
+                                <TooltipTrigger as-child>
+                                    <Link
+                                        :href="route('edit_registration', { id: registration.id })"
+                                        class="bg-foreground hover:bg-foreground/60 block size-fit rounded-full p-2 transition-all duration-300"
+                                        ><PencilIcon class="text-background size-4"
+                                    /></Link>
+                                </TooltipTrigger>
+                                <TooltipContent>Edit Registration</TooltipContent>
+                            </Tooltip>
+                        </CardFooter>
+                    </Card>
                 </div>
             </div>
         </div>

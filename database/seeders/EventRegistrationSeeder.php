@@ -33,6 +33,8 @@ class EventRegistrationSeeder extends Seeder
                     'end_date' => fake()->dateTimeBetween('now', '+1 month'),
                     'type' => 'recruitment',
                     'status' => Arr::random($status),
+                    'start_date' => today()->format('Y-m-d'),
+                    'end_date' => today()->addDay()->format('Y-m-d')
                 ]);
             }
 
@@ -44,6 +46,8 @@ class EventRegistrationSeeder extends Seeder
                     'end_date' => fake()->dateTimeBetween('now', '+1 month'),
                     'type' => 'registration',
                     'status' => Arr::random($status),
+                    'start_date' => today()->format('Y-m-d'),
+                    'end_date' => today()->addDay()->format('Y-m-d')
                 ]);
             }
         }
