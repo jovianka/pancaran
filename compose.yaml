@@ -1,0 +1,22 @@
+services:
+    db:
+        image: postgres:latest
+        restart: no
+        ports:
+            - "5432:5432"
+        shm_size: 256mb
+        volumes:
+            - pancaran-db:/var/lib/postgresql
+        environment:
+            POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_DB: ${DB_DATABASE}
+        secrets:
+            - postgres_password
+
+volumes:
+  pancaran-db:
+
+secrets:
+    postgres_password:
+        file: ./secrets/postgres_password.txt

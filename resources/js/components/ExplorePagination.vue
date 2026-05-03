@@ -9,7 +9,7 @@ defineProps<{
 
 function goToPage(url: string | null) {
   if (!url) return
-  let filters: Record<string, string[]> = {
+  const filters: Record<string, string[]> = {
     by: [],
     scope: [],
     tag: [],
