@@ -175,7 +175,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </TableHeader>
                     <TableBody>
                         <TableRow v-for="(response, index) of props.responses" :key="response.id">
-                            <TableCell class="text-center">{{ index + 1 }}</TableCell>
+                            <TableCell class="text-center">{{ index as number + 1 }}</TableCell>
                             <TableCell>{{ response.user.name }}</TableCell>
                             <TableCell v-if="response.user.nim">{{ response.user.nim }}</TableCell>
                             <TableCell v-else>Organization</TableCell>

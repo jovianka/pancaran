@@ -159,7 +159,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <div class="flex flex-row flex-wrap gap-5">
                     <Card v-for="(registration, index) of props.eventRegistrations" :key="index" class="w-sm">
                         <CardHeader>
-                            <CardTitle>{{ `Registration ${index + 1}` }}</CardTitle>
+                            <CardTitle>{{ `Registration ${index as number + 1}` }}</CardTitle>
                             <CardDescription class="text-muted-foreground">{{
                                 `${registration.start_date} until ${registration.end_date}`
                             }}</CardDescription>

@@ -136,7 +136,7 @@ const setEventLevelFilter = (eventLevel: string) => {
                 </TableHeader>
                 <TableBody>
                     <TableRow v-for="(skpDetail, index) of props.skpDetails.data" :key="skpDetail.id">
-                        <TableCell class="text-center">{{ index + 1 + (props.skpDetails.current_page - 1) * props.skpDetails.per_page }}</TableCell>
+                        <TableCell class="text-center">{{ index as number + 1 + (props.skpDetails.current_page - 1) * props.skpDetails.per_page }}</TableCell>
                         <TableCell>{{ skpDetail.category }}</TableCell>
                         <TableCell>{{ skpDetail.description }}</TableCell>
                         <TableCell>{{ skpDetail.role }}</TableCell>

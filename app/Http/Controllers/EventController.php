@@ -91,11 +91,11 @@ class EventController extends Controller
 
         if ($request->poster != null) {
             $uploadedPoster = $request->file('poster');
-            $posterImage = Image::read($uploadedPoster)->resize(700, 875);
+            $posterImage = Image::decode($uploadedPoster)->resize(700, 875);
             $posterImageName = Str::random().'.'.$uploadedPoster->getClientOriginalExtension();
             Storage::disk('local')->put(
                 'event_posters/'.$posterImageName,
-                $posterImage->encodeByExtension($uploadedPoster->getClientOriginalExtension(), quality: 70)
+                $posterImage->encodeUsingFileExtension($uploadedPoster->getClientOriginalExtension(), quality: 70)
             );
             $validatedRequest['poster'] = $posterImageName;
         } else {
@@ -201,11 +201,11 @@ class EventController extends Controller
             }
 
             $uploadedPoster = $request->file('poster');
-            $posterImage = Image::read($uploadedPoster)->resize(700, 875);
+            $posterImage = Image::decode($uploadedPoster)->resize(700, 875);
             $posterImageName = Str::random().'.'.$uploadedPoster->getClientOriginalExtension();
             Storage::disk('local')->put(
                 'event_posters/'.$posterImageName,
-                $posterImage->encodeByExtension($uploadedPoster->getClientOriginalExtension(), quality: 70)
+                $posterImage->encodeUsingFileExtension($uploadedPoster->getClientOriginalExtension(), quality: 70)
             );
             $validatedRequests['poster'] = $posterImageName;
         } else {

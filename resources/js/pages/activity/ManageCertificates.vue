@@ -90,7 +90,7 @@ const getSelectedRoleBasePdf = async () => {
 
 const generateCertificates = () => {
     if (nomorSuratInput.value === '') {
-        alert('FIll nomor surat input');
+        alert('Fill nomor surat input');
         return;
     }
 
@@ -239,7 +239,7 @@ watch(selectedRole, async () => {
                 <Button variant="default" @click="pdfDesignerInstance?.saveTemplate()">Save Template</Button>
                 <Button variant="default" @click="generateCertificates">Generate & Send Certificates</Button>
             </div>
-            <div ref="pdfDesigner" class="max-h-[500px] max-w-6xl"></div>
+            <div ref="pdfDesigner" class="h-125 max-h-[500px] max-w-6xl"></div>
 
             <h3 class="mt-8 font-bold">Certificates Sent</h3>
             <Table>
@@ -256,7 +256,7 @@ watch(selectedRole, async () => {
                 </TableHeader>
                 <TableBody>
                     <TableRow v-for="(certificate, index) of props.certificates" :key="certificate.id">
-                        <TableCell class="text-center">{{ index + 1 }}</TableCell>
+                        <TableCell class="text-center">{{ index as number + 1 }}</TableCell>
                         <TableCell>{{ certificate.user.name }}</TableCell>
                         <TableCell v-if="certificate.user.nim">{{ certificate.user.nim }}</TableCell>
                         <TableCell v-else>Organization</TableCell>

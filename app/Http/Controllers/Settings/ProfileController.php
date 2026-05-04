@@ -57,11 +57,11 @@ class ProfileController extends Controller
             }
 
             $uploadedAvatar = $request->file('avatar');
-            $avatarImage = Image::read($uploadedAvatar)->resize(320, 320);
+            $avatarImage = Image::decode($uploadedAvatar)->resize(320, 320);
             $avatarImageName = Str::random().'.'.$uploadedAvatar->getClientOriginalExtension();
             Storage::disk('public')->put(
                 $avatarImageName,
-                $avatarImage->encodeByExtension($uploadedAvatar->getClientOriginalExtension(), quality: 70)
+                $avatarImage->encodeUsingFileExtension($uploadedAvatar->getClientOriginalExtension(), quality: 70)
             );
             $validatedRequests['avatar'] = $avatarImageName;
         } else {

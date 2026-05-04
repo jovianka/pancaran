@@ -69,7 +69,7 @@ const setRoleFilter = (roleId: any) => {
                 </TableHeader>
                 <TableBody>
                     <TableRow v-for="(user, index) of props.eventUsers.data" :key="user.id">
-                        <TableCell class="text-center">{{ index + 1 }}</TableCell>
+                        <TableCell class="text-center">{{ index as number + 1 }}</TableCell>
                         <TableCell>{{ user.name }}</TableCell>
                         <TableCell v-if="user.nim">{{ user.nim }}</TableCell>
                         <TableCell v-else>Organization</TableCell>
@@ -152,7 +152,7 @@ const setRoleFilter = (roleId: any) => {
                 </TableHeader>
                 <TableBody>
                     <TableRow v-for="(invitation, index) of props.invitations" :key="invitation.id">
-                        <TableCell class="text-center">{{ index + 1 }}</TableCell>
+                        <TableCell class="text-center">{{ index as number + 1 }}</TableCell>
                         <TableCell>{{ invitation.recipient.name }}</TableCell>
                         <TableCell v-if="invitation.recipient.nim">{{ invitation.recipient.nim }}</TableCell>
                         <TableCell v-else>Organization</TableCell>
