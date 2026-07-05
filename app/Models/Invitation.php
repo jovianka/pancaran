@@ -2,12 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Invitation extends Model
 {
-    protected $guarded = ['id'];
+    use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'body',
+        'status',
+        'event_id',
+        'event_role_id',
+        'recipient_id',
+    ];
+
     protected $table = 'invitation';
 
     public function role(): BelongsTo

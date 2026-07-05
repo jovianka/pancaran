@@ -14,7 +14,21 @@ use Illuminate\Support\Facades\Auth;
 
 class Event extends Model
 {
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'name',
+        'description',
+        'event_level',
+        'poster',
+        'start_date',
+        'end_date',
+        'job_description',
+        'requirements',
+        'status',
+        'parent_id',
+        'faculty_id',
+        'major_id',
+    ];
+
     protected $table = 'event';
 
     use HasFactory;
@@ -27,6 +41,14 @@ class Event extends Model
     public function eventUsers(): HasMany
     {
         return $this->hasMany(EventUser::class);
+    }
+
+    /**
+     * Event members whose membership is currently active.
+     */
+    public function activeEventUsers(): HasMany
+    {
+        return $this->hasMany(EventUser::class)->where('status', 'active');
     }
 
     public function certificates(): HasMany

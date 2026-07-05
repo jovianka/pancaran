@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EventRegistrationResponse extends Model
 {
+    use HasFactory;
+
     protected $guarded = ['id'];
+
     protected $table = 'event_registration_response';
 
     protected $fillable = [
@@ -16,9 +20,11 @@ class EventRegistrationResponse extends Model
         'event_registration_id',
         'details',
     ];
+
     protected $casts = [
         'details' => 'array',
     ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -28,5 +34,4 @@ class EventRegistrationResponse extends Model
     {
         return $this->belongsTo(EventRegistration::class);
     }
-
 }

@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\EventRegistration;
+use App\Models\EventRegistrationQuestion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\EventRegistrationQuestion>
+ * @extends Factory<EventRegistrationQuestion>
  */
 class EventRegistrationQuestionFactory extends Factory
 {
@@ -17,7 +19,17 @@ class EventRegistrationQuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => fake()->sentence(3),
+            'description' => fake()->sentence(),
+            'questions' => [
+                [
+                    'id' => 1,
+                    'question' => 'Nama lengkap',
+                    'type' => 'text',
+                    'required' => true,
+                ],
+            ],
+            'event_registration_id' => EventRegistration::factory(),
         ];
     }
 }

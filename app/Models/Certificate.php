@@ -9,7 +9,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Certificate extends Model
 {
     use HasFactory;
-    protected $guarded = ['id'];
+
+    protected $fillable = [
+        'nomor_surat',
+        'file',
+        'user_id',
+        'event_id',
+        'event_role_id',
+        'detail_skp_id',
+    ];
+
     protected $table = 'certificate';
 
     public function user(): BelongsTo

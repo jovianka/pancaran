@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -9,7 +10,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EventRole extends Model
 {
-    protected $guarded = ['id'];
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'quota',
+        'certificate_schema',
+        'certificate_basepdf',
+        'event_id',
+        'detail_skp_id',
+    ];
+
     protected $table = 'event_role';
 
     public function event(): BelongsTo

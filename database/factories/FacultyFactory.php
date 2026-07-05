@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Faculty;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Faculty>
+ * @extends Factory<Faculty>
  */
 class FacultyFactory extends Factory
 {
@@ -17,7 +18,7 @@ class FacultyFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => 'Fakultas '.fake()->unique()->words(2, true),
         ];
     }
 }

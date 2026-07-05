@@ -2,10 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\EventRegistration;
+use App\Models\EventRegistrationResponse;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\EventRegistrationResponse>
+ * @extends Factory<EventRegistrationResponse>
  */
 class EventRegistrationResponseFactory extends Factory
 {
@@ -17,7 +20,12 @@ class EventRegistrationResponseFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'date_submitted' => now(),
+            'details' => [
+                ['question_id' => 1, 'answer' => fake()->name()],
+            ],
+            'user_id' => User::factory(),
+            'event_registration_id' => EventRegistration::factory(),
         ];
     }
 }

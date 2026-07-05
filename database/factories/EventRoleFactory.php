@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Event;
+use App\Models\EventRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\EventRole>
+ * @extends Factory<EventRole>
  */
 class EventRoleFactory extends Factory
 {
@@ -17,7 +19,23 @@ class EventRoleFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->unique()->jobTitle(),
+            'quota' => 10,
+            'certificate_schema' => null,
+            'certificate_basepdf' => null,
+            'detail_skp_id' => null,
+            'event_id' => Event::factory(),
         ];
+    }
+
+    /**
+     * The event's Admin role.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => 'Admin',
+            'quota' => 1,
+        ]);
     }
 }
