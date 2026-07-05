@@ -7,6 +7,7 @@ services:
         shm_size: 256mb
         volumes:
             - pancaran-db:/var/lib/postgresql
+            - ./docker/initdb:/docker-entrypoint-initdb.d:ro
         environment:
             POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
             POSTGRES_USER: ${DB_USERNAME}
