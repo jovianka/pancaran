@@ -2,22 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EventRegistration;
 use App\Models\Faculty;
 use App\Models\Major;
 use Illuminate\Http\Request;
-use App\Models\Event;
-use App\Models\EventRegistration;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class EventDetailController extends Controller
 {
-    public function show($registration_id)
+    public function show(Request $request, $registration_id)
     {
-        // $user = Auth::user();
+        $eventRegistration = EventRegistration::with(['event', 'roles', 'questions'])
+            ->withCount(['questions', 'responses'])
+            ->findOrFail($registration_id);
 
-        $eventRegistration = EventRegistration::with(['event', 'roles', 'questions'])->withCount(['questions', 'responses'])->find($registration_id);
-        $responses = $eventRegistration->responses()->with(['user'])->get();
+        $this->authorize('view', $eventRegistration);
+
+        $user = $request->user();
+        $canViewResponses = $user->can('viewResponses', $eventRegistration);
+
+        // Applicant responses are personal data — only expose them to users who
+        // may review registrations for this event.
+        $responses = $canViewResponses
+            ? $eventRegistration->responses()->with(['user'])->get()
+            : collect();
 
         $info = [
             'title' => $eventRegistration->event->name,
@@ -37,7 +45,12 @@ class EventDetailController extends Controller
             'responses' => $responses,
             'faculties' => Faculty::all(),
             'majors' => Major::all(),
+            'can' => [
+                'viewResponses' => $canViewResponses,
+                'decideResponse' => $user->can('decideResponse', $eventRegistration),
+                'updateRegistration' => $user->can('update', $eventRegistration),
+                'deleteRegistration' => $user->can('delete', $eventRegistration),
+            ],
         ]);
     }
-
 }

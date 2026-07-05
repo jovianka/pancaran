@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -12,7 +12,7 @@ class EditEventRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -21,7 +21,7 @@ class EditEventRequest extends FormRequest
             $majorRules = [
                 'integer',
                 Rule::exists('major', 'id')->where('faculty_id', $this->faculty_id),
-                'required_with:faculty_id'
+                'required_with:faculty_id',
             ];
         } else {
             $majorRules = [
@@ -30,7 +30,7 @@ class EditEventRequest extends FormRequest
                     $query->where('faculty_id', '=', $this->faculty_id)
                         ->orWhere('name', '=', 'Any');
                 }),
-                'required_with:faculty_id'
+                'required_with:faculty_id',
             ];
         }
 
@@ -44,10 +44,10 @@ class EditEventRequest extends FormRequest
             'faculty_id' => 'required|integer|exists:faculty,id',
             'major_id' => $majorRules,
             'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
             'requirements' => 'required|json',
             'tags' => 'nullable|array',
-            'tags.*' => 'string|lowercase'
+            'tags.*' => 'string|lowercase',
         ];
     }
 

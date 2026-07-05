@@ -1,19 +1,19 @@
 <?php
-use App\Http\Controllers\RegistrationSettingController;
-use App\Http\Controllers\FormRegistrationResponseController;
+
+use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\CertificateDetailController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseSkpController;
 use App\Http\Controllers\DetailSkpController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\InvitationsController;
-use Illuminate\Http\Request;
-use App\Http\Controllers\CertificateDetailController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\EventDetailController;
-use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\EventUserController;
-use Inertia\Inertia;
+use App\Http\Controllers\ExploreController;
+use App\Http\Controllers\FormRegistrationResponseController;
+use App\Http\Controllers\InvitationsController;
+use App\Http\Controllers\RegistrationSettingController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -42,15 +42,14 @@ Route::get('/event/{event_id}/get-base-pdf/{filename}', [CertificateController::
 Route::get('/event/get-certificate/{filename}', [CertificateController::class, 'getCertificateFile'])->middleware(['auth', 'verified'])->name('event.getCertificateFile');
 Route::get('/event/download-certificate/{filename}', [CertificateController::class, 'downloadCertificateFile'])->middleware(['auth', 'verified'])->name('event.downloadCertificateFile');
 
-
 Route::get('/database-skp', [DatabaseSkpController::class, 'view'])->middleware(['auth', 'verified'])->name('databaseSkp.view');
 
 Route::get('/invitations', [InvitationsController::class, 'view'])->middleware(['auth', 'verified'])->name('invitations.view');
 Route::patch('/invitation/{id}/reject', [InvitationsController::class, 'rejectInvitation'])->middleware(['auth', 'verified'])->name('invitations.reject');
 Route::post('/invitation/{id}/accept', [InvitationsController::class, 'acceptInvitation'])->middleware(['auth', 'verified'])->name('invitations.accept');
 
-Route::put('/event-user/{id}', [EventUserController::class, 'update']);
-Route::delete('/event-user/{id}', [EventUserController::class, 'destroy']);
+Route::put('/event-user/{eventUser}', [EventUserController::class, 'update'])->middleware(['auth', 'verified'])->name('event-user.update');
+Route::delete('/event-user/{eventUser}', [EventUserController::class, 'destroy'])->middleware(['auth', 'verified'])->name('event-user.destroy');
 
 Route::get('/create-registration/{event_id}', [RegistrationSettingController::class, 'show'])->middleware(['auth', 'verified'])->name('create-registration');
 
@@ -62,15 +61,14 @@ Route::post('/registration/{event_id}/form/update', [RegistrationSettingControll
 Route::post('/registration/{event_id}/form/delete', [RegistrationSettingController::class, 'delete_registration'])->middleware(['auth', 'verified'])->name('delete_registration');
 
 // Registration Viewer
-Route::get('/registration/{id}', [EventDetailController::class, 'show'])->name('registration.view');
+Route::get('/registration/{id}', [EventDetailController::class, 'show'])->middleware(['auth', 'verified'])->name('registration.view');
 Route::get('/registration/{id}/form', [FormRegistrationResponseController::class, 'show'])->middleware(['auth', 'verified'])->name('registration_show_form');
-Route::post('/registration/{form_question_id}/submit', [FormRegistrationResponseController::class, 'store'])->middleware(['auth', 'verified'])->name('response_registration');
+Route::post('/registration/{form_question_id}/submit', [FormRegistrationResponseController::class, 'store'])->middleware(['auth', 'verified', 'throttle:30,1'])->name('response_registration');
 
 // Response Viewer
 Route::get('/registration/{registration_id}/responses/{user_id}', [FormRegistrationResponseController::class, 'showResponse'])->middleware(['auth', 'verified'])->name('registration_show_response');
 Route::post('/accept-registration-response', [FormRegistrationResponseController::class, 'acceptResponse'])->middleware(['auth', 'verified'])->name('accept_response');
 Route::post('/reject-registration-response', [FormRegistrationResponseController::class, 'rejectResponse'])->middleware(['auth', 'verified'])->name('reject_response');
-
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

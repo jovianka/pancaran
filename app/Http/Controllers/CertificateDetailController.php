@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Certificate;
-use App\Models\User;
-use Inertia\Inertia;
 use Carbon\Carbon;
+use Inertia\Inertia;
 
 class CertificateDetailController extends Controller
 {
@@ -18,8 +17,7 @@ class CertificateDetailController extends Controller
         // Ambil certificate beserta relasi: event dan detailSkp
         $certificate = Certificate::with(['event.eventUsers.user', 'event.eventUsers.role', 'event', 'detailSkp'])->findOrFail($id);
 
-        // Ambil semua user bertipe organization
-        $allUsers = User::where('type', 'organization')->get();
+        $this->authorize('view', $certificate);
 
         // Format tanggal event jika ada
         $event = $certificate->event;
