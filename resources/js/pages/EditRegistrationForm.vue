@@ -33,22 +33,6 @@ import {
 import Toaster from '@/components/ui/sonner/Sonner.vue';
 import { toast } from 'vue-sonner';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Activity',
-        href: '/activity',
-    },
-    {
-        title: 'Event',
-        href: '/activity/${event.id}',
-    },
-    {
-        title: 'Edit Registration',
-        href: '',
-    },
-];
-
-
 interface Question {
     id: number
     question: string
@@ -86,7 +70,20 @@ const props = defineProps<{
     event_registration_form: FormDetails;
 }>();
 
-
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Activity',
+        href: '/activity',
+    },
+    {
+        title: 'Event',
+        href: `/event/${props.event_registration?.event_id}`,
+    },
+    {
+        title: 'Edit Registration',
+        href: '',
+    },
+];
 
 const registrationDetails = reactive<RegistrationDetails>({
     id:props.event_registration?.id,

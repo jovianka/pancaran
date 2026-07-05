@@ -22,6 +22,12 @@ import { type BreadcrumbItem } from '@/types';
 import Toaster from '@/components/ui/sonner/Sonner.vue';
 import { toast } from 'vue-sonner';
 
+const props = withDefaults(defineProps<{
+    event_id: number;
+}>(), {
+    event_id: 1,
+});
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Activity',
@@ -29,7 +35,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Event',
-        href: '/activity/${event.id}',
+        href: `/event/${props.event_id}`,
     },
     {
         title: 'Create Registration',
@@ -77,13 +83,6 @@ const registrationDetails = reactive<RegistrationDetails>({
     start_date: null,
     end_date: null,
 })
-
-const props = withDefaults(defineProps<{
-    event_id: number;
-}>(),{
-    event_id: 1
-});
-
 
 const validateRegistrationDetails = () =>{
     if (registrationDetails.type === null){

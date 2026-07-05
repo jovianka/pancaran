@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { pdf2img } from '@pdfme/converter';
 import { onMounted, ref } from 'vue';
 
 
@@ -8,6 +7,7 @@ const props = defineProps(['certificate']);
 const convertPdfToImageURL = async (filename: string) => {
     const response = await fetch(route('event.getCertificateFile', { filename: filename }));
     const arrayBuffer = await response.arrayBuffer();
+    const { pdf2img } = await import('@pdfme/converter');
     const images = await pdf2img(arrayBuffer, {
         imageType: 'png',
         scale: 1,

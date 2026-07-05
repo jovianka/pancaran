@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { router } from '@inertiajs/vue3';
-import { pdf2img } from '@pdfme/converter';
 import { onMounted, ref } from 'vue';
 
 interface Certificate {
@@ -46,6 +45,7 @@ const breadcrumbs = [
 const convertPdfToImageURL = async (filename: string) => {
     const response = await fetch(route('event.getCertificateFile', { filename: filename }));
     const arrayBuffer = await response.arrayBuffer();
+    const { pdf2img } = await import('@pdfme/converter');
     const images = await pdf2img(arrayBuffer, {
         imageType: 'png',
         scale: 1,

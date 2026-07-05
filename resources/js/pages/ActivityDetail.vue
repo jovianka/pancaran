@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { Toaster } from '@/components/ui/sonner';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
@@ -20,6 +21,7 @@ const toggleTab = (tab: 'info' | 'jobdesk') => {
 const props = defineProps<{
     event: any;
     eventRegistrations: any;
+    can?: Record<string, boolean>;
     info: {
         title: string;
         type: string;
@@ -33,6 +35,12 @@ const props = defineProps<{
         eventId: number;
     };
 }>();
+
+const leave = () => {
+    if (confirm('Yakin ingin keluar dari event ini?')) {
+        router.post(route('activity.leave', { id: props.event.id }));
+    }
+};
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -130,18 +138,16 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
 
                     <div class="flex w-full flex-wrap gap-2">
-                        <Link :href="route('event.edit', { id: event.id })">
+                        <Link v-if="can?.update" :href="route('event.edit', { id: event.id })">
                             <Button variant="outline" class="lg:text-md w-32 p-5"> Edit Event </Button>
                         </Link>
-                        <Link :href="route('members.view', { id: event.id })">
+                        <Link v-if="can?.manageMembers" :href="route('members.view', { id: event.id })">
                             <Button variant="outline" class="lg:text-md w-32 p-5"> Members </Button>
                         </Link>
-                        <Link :href="route('certificates.manage', { id: event.id })">
+                        <Link v-if="can?.manageCertificates" :href="route('certificates.manage', { id: event.id })">
                             <Button variant="outline" class="lg:text-md w-32 p-5"> Certificates </Button>
                         </Link>
-                        <Link href="">
-                            <Button variant="destructive" class="lg:text-md w-32 p-5"> Leave </Button>
-                        </Link>
+                        <Button v-if="can?.isMember" variant="destructive" class="lg:text-md w-32 p-5" @click="leave"> Leave </Button>
                     </div>
                 </div>
             </div>
@@ -149,7 +155,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div>
                 <div class="mb-4 flex flex-row items-center gap-3">
                     <h3 class="text-xl font-bold">Registrations</h3>
-                    <Link :href="route('create-registration', { event_id: props.event.id })">
+                    <Link v-if="can?.createRegistration" :href="route('create-registration', { event_id: props.event.id })">
                         <Button variant="outline" class="flex flex-row">
                             <span>Create Registration</span>
                             <PlusIcon />
@@ -185,7 +191,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 </TooltipTrigger>
                                 <TooltipContent>Event Details</TooltipContent>
                             </Tooltip>
-                            <Tooltip :delay-duration="200">
+                            <Tooltip v-if="can?.updateRegistration" :delay-duration="200">
                                 <TooltipTrigger as-child>
                                     <Link
                                         :href="route('edit_registration', { id: registration.id })"
@@ -200,5 +206,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
             </div>
         </div>
+        <Toaster position="top-center" :rich-colors="true" :close-button="true" />
     </AppLayout>
 </template>

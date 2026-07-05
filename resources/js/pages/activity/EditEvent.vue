@@ -28,6 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area/';
 import { Separator } from '@/components/ui/separator';
 import { TagsInput, TagsInputInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from '@/components/ui/tags-input';
+import { Toaster } from '@/components/ui/sonner';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import DefaultPageLayout from '@/layouts/DefaultPageLayout.vue';
@@ -39,7 +40,13 @@ import { CalendarIcon, ChevronsUpDown, LoaderCircle, PencilIcon } from 'lucide-v
 import { useFilter } from 'reka-ui';
 import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 
-const props = defineProps(['faculties', 'majors', 'event', 'eventTags', 'eventRoles']);
+const props = defineProps(['faculties', 'majors', 'event', 'eventTags', 'eventRoles', 'can']);
+
+const deleteEvent = () => {
+    if (confirm('Yakin ingin menghapus event ini? Tindakan ini tidak dapat dibatalkan.')) {
+        router.delete(route('event.destroy', { id: props.event.id }));
+    }
+};
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -603,7 +610,7 @@ watch(endDate, () => {
             <!-- Event Role Editor -->
             <div class="mt-12 flex flex-row items-center gap-5">
                 <Heading title="Edit Event Roles" class="mb-0!" />
-                <Dialog>
+                <Dialog v-if="can?.manageRoles">
                     <DialogTrigger as-child>
                         <Button variant="outline">Add Role</Button>
                     </DialogTrigger>
@@ -713,7 +720,7 @@ watch(endDate, () => {
                             </ul>
                         </div>
                     </CardContent>
-                    <CardFooter class="gap-3">
+                    <CardFooter v-if="can?.manageRoles" class="gap-3">
                         <Dialog>
                             <DialogTrigger as-child>
                                 <Button variant="outline">Edit</Button>
@@ -825,6 +832,13 @@ watch(endDate, () => {
                 </Card>
             </div>
 
+            <!-- Danger Zone -->
+            <div v-if="can?.delete" class="mt-12 border-t pt-6">
+                <Heading title="Danger Zone" class="mb-2!" />
+                <Button variant="destructive" @click="deleteEvent">Delete Event</Button>
+            </div>
+
+            <Toaster position="top-center" :rich-colors="true" :close-button="true" />
         </DefaultPageLayout>
     </AppLayout>
 </template>

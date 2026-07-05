@@ -3,6 +3,7 @@ import CreateInvitationDialog from '@/components/CreateInvitationDialog.vue';
 import EditInvitationDialog from '@/components/EditInvitationDialog.vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
+import { Toaster } from '@/components/ui/sonner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
 import DefaultPageLayout from '@/layouts/DefaultPageLayout.vue';
@@ -11,7 +12,7 @@ import { Head, router } from '@inertiajs/vue3';
 import { ChevronLeftIcon, ChevronRight, PencilLineIcon, SearchXIcon } from 'lucide-vue-next';
 import { PaginationEllipsis, PaginationList, PaginationListItem, PaginationNext, PaginationPrev, PaginationRoot } from 'reka-ui';
 
-const props = defineProps(['faculties', 'majors', 'event', 'eventRoles', 'invitations', 'auth', 'eventUsers', 'roleFilter']);
+const props = defineProps(['faculties', 'majors', 'event', 'eventRoles', 'invitations', 'auth', 'eventUsers', 'roleFilter', 'can']);
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -174,6 +175,7 @@ const setRoleFilter = (roleId: any) => {
                 <SearchXIcon class="w-4" />
                 <p>No event users found</p>
             </div>
+            <Toaster position="top-center" :rich-colors="true" :close-button="true" />
         </DefaultPageLayout>
     </AppLayout>
 </template>

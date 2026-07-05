@@ -2,6 +2,7 @@
 import TiptapViewer from '@/components/TiptapViewer.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Toaster } from '@/components/ui/sonner';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
@@ -21,6 +22,7 @@ const props = defineProps<{
     responses: any;
     faculties: any;
     majors: any;
+    can?: Record<string, boolean>;
     info: {
         title: string;
         type: string;
@@ -45,6 +47,14 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: `/registration/${props.eventRegistration.id}`,
     },
 ];
+
+const deleteRegistration = () => {
+    if (confirm('Yakin ingin menghapus pendaftaran ini? Semua respon akan ikut terhapus.')) {
+        router.post(route('delete_registration', { event_id: props.eventRegistration.event_id }), {
+            registration_id: props.eventRegistration.id,
+        });
+    }
+};
 </script>
 
 <template>
@@ -150,17 +160,15 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <Link :href="route('registration_show_form', { id: eventRegistration.id })" v-if="auth.user.type === 'student'">
                             <Button variant="default" class="lg:text-md w-36 p-5"> Registration Form </Button>
                         </Link>
-                        <Link :href="route('edit_registration', { id: eventRegistration.id })" v-if="auth.user.type === 'organization'">
+                        <Link :href="route('edit_registration', { id: eventRegistration.id })" v-if="can?.updateRegistration">
                             <Button variant="outline" class="lg:text-md w-32 p-5"> Edit Registration </Button>
                         </Link>
-                        <Link href="" v-if="auth.user.type === 'organization'">
-                            <Button variant="destructive" class="lg:text-md w-32 p-5"> Delete </Button>
-                        </Link>
+                        <Button v-if="can?.deleteRegistration" variant="destructive" class="lg:text-md w-32 p-5" @click="deleteRegistration"> Delete </Button>
                     </div>
                 </div>
             </div>
 
-            <div v-if="auth.user.type === 'organization'">
+            <div v-if="can?.viewResponses">
                 <h3 class="mt-4 text-xl font-bold">Responses</h3>
                 <Table v-if="props.responses.length > 0">
                     <TableHeader>
@@ -194,5 +202,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <span v-else>No responses found</span>
             </div>
         </div>
+        <Toaster position="top-center" :rich-colors="true" :close-button="true" />
     </AppLayout>
 </template>

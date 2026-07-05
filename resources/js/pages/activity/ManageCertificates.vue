@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
+import { Toaster } from '@/components/ui/sonner';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,7 +18,6 @@ import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import type { Font } from '@pdfme/common';
-import { generate } from '@pdfme/generator';
 import { barcodes, image, text } from '@pdfme/schemas';
 import { Designer } from '@pdfme/ui';
 import { useBase64, useFetch } from '@vueuse/core';
@@ -35,7 +35,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const props = defineProps(['defaultCertificateTemplate', 'eventRoles', 'event', 'certificates']);
+const props = defineProps(['defaultCertificateTemplate', 'eventRoles', 'event', 'certificates', 'can']);
 
 const selectedRoleId = ref<string>('');
 const selectedRole = computed(() => {
@@ -109,6 +109,7 @@ const generateCertificates = () => {
     const promises = selectedRole.value.users.map(async (user: any) => {
         const inputs = [{ nama: user.name }];
         const currentTemplate = pdfDesignerInstance.getTemplate();
+        const { generate } = await import('@pdfme/generator');
         const pdf = await generate({ template: currentTemplate, options: options, plugins: plugins, inputs });
         const blob = new Blob([pdf], { type: 'application/pdf' });
 
@@ -288,6 +289,7 @@ watch(selectedRole, async () => {
                     </TableRow>
                 </TableBody>
             </Table>
+            <Toaster position="top-center" :rich-colors="true" :close-button="true" />
         </DefaultPageLayout>
     </AppLayout>
 </template>
