@@ -86,6 +86,16 @@ return [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
+            // Read/write split is only enabled when both hosts are explicitly set
+            // (the containerized primary/replica setup). Otherwise a single
+            // connection is used, keeping local dev and the test suite unchanged.
+            'read' => env('DB_READ_HOST')
+                ? ['host' => array_values(array_filter(explode(',', (string) env('DB_READ_HOST'))))]
+                : null,
+            'write' => env('DB_WRITE_HOST')
+                ? ['host' => array_values(array_filter(explode(',', (string) env('DB_WRITE_HOST'))))]
+                : null,
+            'sticky' => env('DB_STICKY', true),
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'laravel'),
             'username' => env('DB_USERNAME', 'root'),
