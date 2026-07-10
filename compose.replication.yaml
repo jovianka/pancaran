@@ -1,0 +1,128 @@
+# Experimental primary + read-replica Postgres topology for PANCARAN.
+# Single host (podman + docker-compose). Demonstrates streaming replication +
+# Laravel read/write split. Fresh volumes — does NOT touch the dev `pancaran-db`.
+#
+#   docker-compose -f compose.replication.yaml up --build -d
+#
+name: pancaran-repl
+
+services:
+    db-primary:
+        image: postgres:latest
+        shm_size: 256mb
+        ports:
+            - '5433:5432'
+        environment:
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_DB: ${DB_DATABASE}
+            POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+        command: >
+            postgres
+            -c wal_level=replica
+            -c max_wal_senders=10
+            -c max_replication_slots=10
+            -c hot_standby=on
+            -c listen_addresses=*
+        volumes:
+            - pg-primary:/var/lib/postgresql
+            - ./docker/postgres/primary-init.sh:/docker-entrypoint-initdb.d/10-primary-init.sh:ro
+        secrets:
+            - postgres_password
+            - replication_password
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}']
+            interval: 5s
+            timeout: 5s
+            retries: 12
+
+    db-replica1:
+        image: postgres:latest
+        shm_size: 256mb
+        ports:
+            - '5434:5432'
+        entrypoint: ['bash', '/usr/local/bin/replica-entrypoint.sh']
+        environment:
+            PRIMARY_HOST: db-primary
+            REPLICATION_USER: replicator
+            REPLICATION_SLOT: replica1_slot
+        volumes:
+            - pg-rep1:/var/lib/postgresql
+            - ./docker/postgres/replica-entrypoint.sh:/usr/local/bin/replica-entrypoint.sh:ro
+        secrets:
+            - replication_password
+        depends_on:
+            db-primary:
+                condition: service_healthy
+
+    db-replica2:
+        image: postgres:latest
+        shm_size: 256mb
+        ports:
+            - '5435:5432'
+        entrypoint: ['bash', '/usr/local/bin/replica-entrypoint.sh']
+        environment:
+            PRIMARY_HOST: db-primary
+            REPLICATION_USER: replicator
+            REPLICATION_SLOT: replica2_slot
+        volumes:
+            - pg-rep2:/var/lib/postgresql
+            - ./docker/postgres/replica-entrypoint.sh:/usr/local/bin/replica-entrypoint.sh:ro
+        secrets:
+            - replication_password
+        depends_on:
+            db-primary:
+                condition: service_healthy
+
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: app
+        environment:
+            APP_ENV: local
+            APP_DEBUG: 'true'
+            APP_URL: http://localhost:8000
+            LOG_CHANNEL: stderr
+            DB_CONNECTION: pgsql
+            DB_DATABASE: ${DB_DATABASE}
+            DB_USERNAME: ${DB_USERNAME}
+            DB_PORT: 5432
+            DB_WRITE_HOST: db-primary
+            DB_READ_HOST: db-replica1,db-replica2
+            DB_STICKY: 'true'
+            SESSION_DRIVER: database
+            CACHE_STORE: database
+            QUEUE_CONNECTION: sync
+        volumes:
+            - app-storage:/var/www/html/storage
+        secrets:
+            - postgres_password
+        depends_on:
+            db-primary:
+                condition: service_healthy
+            db-replica1:
+                condition: service_started
+            db-replica2:
+                condition: service_started
+
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: web
+        ports:
+            - '8000:80'
+        depends_on:
+            - app
+
+volumes:
+    pg-primary:
+    pg-rep1:
+    pg-rep2:
+    app-storage:
+
+secrets:
+    postgres_password:
+        file: ./secrets/postgres_password.txt
+    replication_password:
+        file: ./secrets/replication_password.txt
