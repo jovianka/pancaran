@@ -26,10 +26,12 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $nim = fake()->unique()->numerify('23#######');
+
         return [
             'name' => fake()->unique()->name(),
-            'nim' => fake()->unique()->numerify('2308561###'),
-            'email' => fake()->unique()->numerify('2308561######').'@student.unud.ac.id',
+            'nim' => $nim,
+            'email' => $nim.'@student.unud.ac.id',
             'type' => 'student',
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
